@@ -1,0 +1,21 @@
+name: correctness
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        sanitize: ["OFF", "ON"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install headers
+        run: sudo apt-get update && sudo apt-get install -y libboost-dev libssl-dev
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.sanitize == 'ON' && 'Debug' || 'Release' }} -DSANITIZE=${{ matrix.sanitize }}
+      - name: Build
+        run: cmake --build build -j 2
+      - name: Correctness and recovery
+        env:
+          ASAN_OPTIONS: detect_leaks=1
+          UBSAN_OPTIONS: halt_on_error=1
+        run: ctest --test-dir build --output-on-failure

@@ -1,0 +1,6 @@
+/build*/
+/.deps/
+/Experiments/*
+!/Experiments/reports/
+__pycache__/
+*.pyc
