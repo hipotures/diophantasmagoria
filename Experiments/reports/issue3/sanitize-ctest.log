@@ -1,0 +1,51 @@
+Start testing: Sep 28 23:27 UTC
+----------------------------------------------------------
+1/3 Testing: unit
+1/3 Test: unit
+Command: "/home/user/DEV/diophantasmagoria/build-sanitize/unit_tests"
+Directory: /home/user/DEV/diophantasmagoria/build-sanitize
+"unit" start time: Sep 28 23:27 UTC
+Output:
+----------------------------------------------------------
+All mathematical unit tests passed
+<end of output>
+Test time =   6.89 sec
+----------------------------------------------------------
+Test Passed.
+"unit" end time: Sep 28 23:28 UTC
+"unit" time elapsed: 00:00:06
+----------------------------------------------------------
+
+2/3 Testing: integration
+2/3 Test: integration
+Command: "/usr/bin/python3" "/home/user/DEV/diophantasmagoria/tests/integration.py" "/home/user/DEV/diophantasmagoria/build-sanitize/diophantasmagoria"
+Directory: /home/user/DEV/diophantasmagoria/build-sanitize
+"integration" start time: Sep 28 23:28 UTC
+Output:
+----------------------------------------------------------
+Integration suite passed: 29034 tiny-domain candidates, 838 unique witnesses; artifacts: /home/user/DEV/diophantasmagoria/Experiments/test-48057
+<end of output>
+Test time =  77.07 sec
+----------------------------------------------------------
+Test Passed.
+"integration" end time: Sep 28 23:29 UTC
+"integration" time elapsed: 00:01:17
+----------------------------------------------------------
+
+3/3 Testing: epochs
+3/3 Test: epochs
+Command: "/usr/bin/python3" "/home/user/DEV/diophantasmagoria/tests/epochs.py" "/home/user/DEV/diophantasmagoria/build-sanitize/diophantasmagoria" "/home/user/DEV/diophantasmagoria/build-sanitize/fault_search"
+Directory: /home/user/DEV/diophantasmagoria/build-sanitize
+"epochs" start time: Sep 28 23:29 UTC
+Output:
+----------------------------------------------------------
+Epoch crash recovery, out-of-order frontier and migration passed
+<end of output>
+Test time =  15.95 sec
+----------------------------------------------------------
+Test Passed.
+"epochs" end time: Sep 28 23:29 UTC
+"epochs" time elapsed: 00:00:15
+----------------------------------------------------------
+
+End testing: Sep 28 23:29 UTC

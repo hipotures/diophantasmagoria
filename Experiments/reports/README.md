@@ -1,7 +1,8 @@
 # Local validation and benchmark
 
 These are historical issue #1 measurements, before certified even-modulus
-pruning. For the current production-shaped pilot see [issue #2](issue2/README.md).
+pruning. For current full-cache scaling see [issue #3](issue3/README.md); the
+[issue #2 pilot](issue2/README.md) also predates the scheduling fix.
 
 Implementation commit: `427e551ab4e57464eaca5150d2401642a939bfdf`.
 Source-content SHA-256: `9255c78dd2f4636913318e9b738823532d275cb1b9c6e2f368007155495f2464`.
