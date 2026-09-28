@@ -8,6 +8,7 @@
 #include <fstream>
 #include <functional>
 #include <future>
+#include <iomanip>
 #include <iostream>
 #include <sys/resource.h>
 #include <thread>
@@ -642,6 +643,8 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
         throw std::runtime_error(
             "Invalid scheduler limits: chunk tiles 1..4096, queue chunks 1..2048, at most 262144 "
             "queued logical tiles, checkpoint tiles 1..10^9, checkpoint seconds (0,3600]");
+    if (!std::isfinite(o.progress_seconds) || o.progress_seconds < 0)
+        throw std::runtime_error("Invalid progress interval");
     if (o.arithmetic != "auto" && o.arithmetic != "128" && o.arithmetic != "big")
         throw std::runtime_error("Arithmetic must be auto, 128, or big");
     bool safe = true;
@@ -753,6 +756,32 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
     if (o.trace)
         trace_journal = std::make_unique<Journal>(trace, recovered_trace);
     auto start = Clock::now();
+    const U initial_tasks = totals.tasks, initial_candidates = totals.candidates;
+    double last_progress = 0;
+    auto progress = [&](std::string_view status, bool force = false) {
+        if (o.progress_seconds == 0)
+            return;
+        double seconds = elapsed(start);
+        if (!force && seconds - last_progress < o.progress_seconds)
+            return;
+        last_progress = seconds;
+        const U run_tasks = totals.tasks - initial_tasks;
+        std::ostringstream line;
+        line << std::fixed << std::setprecision(1) << "[search " << o.shard << '/' << o.shards
+             << "] " << status << " elapsed=" << seconds << "s committed_tiles=" << totals.tasks
+             << " candidates=" << totals.candidates << " hits=" << totals.hits << " candidates/s="
+             << (seconds > 0 ? static_cast<double>(totals.candidates - initial_candidates) / seconds
+                             : 0);
+        if (o.max_tasks)
+            line << " run_tiles=" << run_tasks << '/' << o.max_tasks << " ("
+                 << 100.0 * static_cast<double>(run_tasks) / static_cast<double>(o.max_tasks)
+                 << "% of run tile budget)";
+        if (o.seconds > 0)
+            line << " time_budget=" << std::min(100.0, 100.0 * seconds / o.seconds)
+                 << "% remaining=" << std::max(0.0, o.seconds - seconds) << "s";
+        line << (complete ? " shard=complete" : " campaign_total=unknown") << '\n';
+        std::cerr << line.str();
+    };
     double persistence = 0;
     U issued_this_run = 0, epoch_count = 0, chunks_issued = 0, checkpoint_writes = 0,
       reordered_epochs = 0;
@@ -799,6 +828,7 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
     };
     if (!continuing)
         persist();
+    progress(continuing ? "resumed" : "started", true);
     const bool use_native = o.arithmetic == "128" || (o.arithmetic == "auto" && safe);
     // The persisted cursor remains the previous epoch's frontier until every issued
     // chunk is received. Futures bound both outstanding work and result buffers.
@@ -905,6 +935,7 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
         ++epoch_count;
         observe("epoch_drained", totals.tasks);
         persist();
+        progress("running");
         if (found && o.stop_on_hit)
             break;
     }
@@ -957,6 +988,7 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
                               ? "Configured shard exhausted; no claim of mathematical nonexistence"
                               : "Partial configured shard; resume required");
     atomic_write(o.output / "report.json", json(report));
+    progress(complete ? "complete" : "paused", true);
     std::cout << json(report);
     return 0;
 }

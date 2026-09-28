@@ -26,6 +26,19 @@ def main():
                         ("--checkpoint-tiles", "0"), ("--checkpoint-seconds", "nan")):
         t.search("invalid", config, db, flag, value, ok=False)
     assert not (t.WORK / "invalid").exists()
+    _, limited = t.search("progress", config, db, "--max-tasks", 2,
+                          "--checkpoint-tiles", 1, "--progress-seconds", "0.000001")
+    assert json.loads(limited.stdout)["counters"]["tasks"] == "2"
+    assert "running" in limited.stderr and "paused" in limited.stderr
+    assert "run_tiles=2/2 (100.0% of run tile budget)" in limited.stderr
+    assert "campaign_total=unknown" in limited.stderr
+    _, resumed = t.search("progress", config, db, "--resume", "--max-tasks", 1)
+    assert "run_tiles=1/1 (100.0% of run tile budget)" in resumed.stderr
+    assert "committed_tiles=3" in resumed.stderr
+    _, silent = t.search("quiet", config, db, "--progress-seconds", 0)
+    assert silent.stderr == "" and json.loads(silent.stdout)["complete"] == "true"
+    _, timed = t.search("timed-progress", config, db, "--seconds", 60)
+    assert "time_budget=" in timed.stderr and "shard=complete" in timed.stderr
     reference, _ = t.search("reference", config, db, "--trace")
     expected_tasks = t.taskset(reference)
     # Exit inside a chunk, during an epoch, after streamed witnesses, after fsync,

@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
                          "[--shard I/N] [--arithmetic auto|128|big] [--resume] [--dry-run] "
                          "[--seconds N] [--max-tasks N] [--stop-on-hit] [--trace] [--no-sieve] "
                          "[--chunk-tiles N] [--queue-chunks N] [--checkpoint-tiles N] "
-                         "[--checkpoint-seconds N]\n"
+                         "[--checkpoint-seconds N] [--progress-seconds N]\n"
                       << "Independent verification, direct enumeration and merging: python3 "
                          "tools/oracle.py --help; python3 tools/merge.py --help\n";
             return 0;
@@ -56,7 +56,8 @@ int main(int argc, char **argv) {
                                                    "--chunk-tiles",
                                                    "--queue-chunks",
                                                    "--checkpoint-tiles",
-                                                   "--checkpoint-seconds"};
+                                                   "--checkpoint-seconds",
+                                                   "--progress-seconds"};
         for (int i = 2; i < argc; ++i) {
             std::string k = argv[i];
             if (opts.contains(k))
@@ -114,8 +115,6 @@ int main(int argc, char **argv) {
             std::cout << dio::json(j);
             return 0;
         }
-        auto db = dio::load_database(required("--db"));
-        auto d = dio::domain(dio::parse(dio::read_file(required("--config"))), db);
         dio::Options o;
         o.output = required("--out");
         auto workers = u("--threads", 1);
@@ -137,6 +136,12 @@ int main(int argc, char **argv) {
         o.checkpoint_seconds = std::stod(interval, &interval_used);
         if (interval_used != interval.size())
             throw std::runtime_error("Invalid checkpoint interval");
+        std::string progress = get("--progress-seconds", "5");
+        size_t progress_used = 0;
+        o.progress_seconds = std::stod(progress, &progress_used);
+        if (progress_used != progress.size() || !std::isfinite(o.progress_seconds) ||
+            o.progress_seconds < 0)
+            throw std::runtime_error("Invalid progress interval");
         std::string seconds = get("--seconds", "0");
         size_t used = 0;
         o.seconds = std::stod(seconds, &used);
@@ -151,6 +156,10 @@ int main(int argc, char **argv) {
             throw std::runtime_error("Invalid shard");
         o.shard = pair[0];
         o.shards = pair[1];
+        if (o.progress_seconds > 0 && !o.dry_run)
+            std::cerr << "[search] Loading root database and validating configuration...\n";
+        auto db = dio::load_database(required("--db"));
+        auto d = dio::domain(dio::parse(dio::read_file(required("--config"))), db);
         return dio::search(
             d, db, o,
             std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count());

@@ -135,6 +135,21 @@ Start with **eight workers** on the measured local machine; 16 gives only a smal
 additional throughput gain. Rerun the sweep on each server: the producer becomes
 significant at higher worker counts. See [full-cache measurements](Experiments/reports/issue3/README.md).
 
+Search prints a startup message and progress to stderr by default, approximately
+every five seconds at a completed checkpoint, plus a final status. It shows elapsed
+search time, cumulative committed tiles/candidates/hits and this invocation's
+average candidates/second. `--progress-seconds 10` changes the interval;
+`--progress-seconds 0` disables these messages. Stdout remains the JSON report.
+
+With `--max-tasks`, the percentage is of **this invocation's tile budget**;
+with `--seconds`, it is elapsed time as a percentage of the time budget, with
+remaining budget seconds. These are not campaign completion percentages or an
+ETA for finding a solution. The campaign total remains unknown without enumerating
+its domain; exhaustion is explicitly reported as `shard=complete`. After resume,
+cumulative counts include earlier checkpoints but rates and budgets start afresh.
+Progress waits for a durable checkpoint, so slow chunks or a larger checkpoint
+interval can delay updates.
+
 Production defaults aggregate 256 logical tiles per worker chunk, keep at most
 `max(2, 2*threads)` chunks in flight, and checkpoint after two seconds or 262144
 issued tiles. Tune with `--chunk-tiles`, `--queue-chunks`, `--checkpoint-seconds`,

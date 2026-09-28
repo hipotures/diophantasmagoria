@@ -41,6 +41,7 @@ struct Options {
     U max_tasks = 0;
     U chunk_tiles = 256, queue_chunks = 0, checkpoint_tiles = 262144;
     double checkpoint_seconds = 2;
+    double progress_seconds = 5; // Zero disables human-readable stderr progress.
     // Optional library observer for deterministic fault tests; absent in the CLI.
     std::function<void(std::string_view, U)> observer;
 };
