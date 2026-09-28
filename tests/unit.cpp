@@ -145,6 +145,65 @@ int main() {
             }
         }
         require(union_set == expected, "Shard union mismatch");
+        // Inspect the prime list and generator output before any CRT or task exists.
+        for (const std::string name : {"g1", "g2"}) {
+            Database filtered_db;
+            filtered_db.a = polynomial(name);
+            filtered_db.limit = 43;
+            filtered_db.checksum = "filter-test";
+            for (U p : primes(43))
+                filtered_db.data[p] = roots(filtered_db.a, p);
+            Json cfg = parse(
+                R"({"m_min":"2","m_max":"1000000","prime_limit":"43","factor_counts":[1,2,3,4],"k_min":"-2","k_max":"2"})");
+            cfg.put("polynomial", name);
+            Domain filtered = domain(cfg, filtered_db);
+            require(filtered.exclude_even, "Named target filter missing");
+            cfg.erase("polynomial");
+            cfg.add_child("coefficients", coefficients(filtered_db.a));
+            require(domain(cfg, filtered_db).fingerprint == filtered.fingerprint,
+                    "Coefficient and named filters differ");
+            require(filtered_db.data.at(2) == std::vector<U>{1}, "Root modulo 2 was changed");
+            std::vector<U> odd_primes;
+            for (const auto &[p, rs] : filtered_db.data)
+                if (p != 2 && !rs.empty())
+                    odd_primes.push_back(p);
+            std::set<std::vector<U>> wanted, combined;
+            for (U mask = 1; mask < (U(1) << odd_primes.size()); ++mask) {
+                U m = 1;
+                std::vector<U> factors;
+                for (size_t i = 0; i < odd_primes.size(); ++i)
+                    if (mask & (U(1) << i)) {
+                        m *= odd_primes[i];
+                        factors.push_back(odd_primes[i]);
+                    }
+                if (factors.size() <= 4 && m <= 1000000)
+                    wanted.insert(factors);
+            }
+            for (U shard = 0; shard < 3; ++shard) {
+                Generator generator(filtered, filtered_db, shard, 3);
+                require(generator.eligible == odd_primes, "Prime 2 not pruned before combinations");
+                while (generator.next(f)) {
+                    require(f.front() != 2, "Even modulus reached task source");
+                    require(combined.insert(f).second, "Filtered shard overlap");
+                }
+            }
+            require(combined == wanted, "Filtered generator coverage mismatch");
+            cfg.put_child("moduli",
+                          parse(R"({"list":[[2],[2,3],[3,5,7],[2,3,5,7]]})").get_child("list"));
+            Domain explicit_domain = domain(cfg, filtered_db);
+            Generator explicit_generator(explicit_domain, filtered_db, 0, 1);
+            require(explicit_domain.excluded_explicit_moduli == 3,
+                    "Wrong explicit exclusion count");
+            require(explicit_generator.next(f) && f == std::vector<U>({3, 5, 7}) &&
+                        !explicit_generator.next(f),
+                    "Excluded explicit modulus reached CRT source");
+        }
+        require(!excludes_even_square_free(polynomial("synthetic")) &&
+                    !excludes_even_square_free(polynomial("regression")) &&
+                    !excludes_even_square_free(Poly{-1, 3, 1, 17}),
+                "Filter applied outside its exact coefficient certificate");
+        require(std::find(gen.eligible.begin(), gen.eligible.end(), 2) != gen.eligible.end(),
+                "Synthetic prime 2 incorrectly excluded");
         Big x = integer("-783954692511"), y = integer("1797526169071"),
             z = integer("-838276125548");
         require(y * z * (y + z) == eval(polynomial("regression"), x),

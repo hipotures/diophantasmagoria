@@ -11,6 +11,8 @@ struct Domain {
     std::vector<std::pair<int64_t, int64_t>> ranges;
     Json canonical;
     std::string fingerprint;
+    bool exclude_even = false;
+    U excluded_explicit_moduli = 0;
 };
 Domain domain(const Json &config, const Database &db);
 struct Generator {

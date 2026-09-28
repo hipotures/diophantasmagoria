@@ -5,7 +5,9 @@ The shared coefficient engine includes `g1 = x^3+x^2+3*x-1`,
 `g2 = 6*x^3+x^2+1`, and `regression = 3*x^3+x^2+x-1`.
 
 The production domain consists of square-free positive moduli, **both signs of
-`d=y+z`**, every modular root, and explicit signed k intervals. It is a heuristic
+`d=y+z`**, every modular root, and explicit signed k intervals. A certified modulo-16
+filter excludes even square-free moduli for exact g1/g2 coefficients before
+combination generation; generic polynomials retain admissible even moduli. It is a heuristic
 subset of all integer triples. Exhausting a configured domain does not prove
 nonexistence. The large regression witness is an existing witness, not a discovery.
 The original [LICENSE](LICENSE) is retained.
@@ -51,8 +53,9 @@ build/diophantasmagoria search --config configs/smoke.json \
 python3 tools/oracle.py verify --results Experiments/smoke-run/results.jsonl
 ```
 
-The bounded smoke domain has 31,812 signed discriminant candidates. An empty hit
-file is expected for this smoke test. Completeness tests also use `x^3-x`, with
+The bounded smoke run enumerates admissible odd moduli for g1. An empty hit
+file is expected for this smoke test. Its counters exclude analytically ruled-out
+even candidates; the database still contains the correct prime-2 row. Completeness tests also use `x^3-x`, with
 actual positive and negative solutions; they do not rely on empty real-target
 results. Root databases are generated once, then loaded read-only by searches.
 
@@ -77,10 +80,59 @@ roots. Automatic arithmetic selects arbitrary precision. Forcing `--arithmetic
 128` on this declared domain is conservatively rejected. Perturbing the triple
 fails exact verification.
 
+## Short pilot with a reusable representative cache
+
+This bounded pilot keeps the production modulus bounds and k window while using
+complete prime coverage **through 2,000,000**, instead of through 20,000,000.
+Generate the cache once; skip precomputation if it already exists. It is also
+valid to reuse a complete larger cache for this smaller configured prime limit.
+
+```sh
+build/diophantasmagoria roots --polynomial g1 --limit 2000000 \
+  --out Experiments/g1-2m.roots.jsonl
+build/diophantasmagoria search --config configs/pilot-g1.json \
+  --db Experiments/g1-2m.roots.jsonl --out Experiments/pilot-g1-v2 \
+  --threads 2 --shard 0/3 --dry-run
+build/diophantasmagoria search --config configs/pilot-g1.json \
+  --db Experiments/g1-2m.roots.jsonl --out Experiments/pilot-g1-v2 \
+  --threads 2 --shard 0/3 --max-tasks 20000
+build/diophantasmagoria search --config configs/pilot-g1.json \
+  --db Experiments/g1-2m.roots.jsonl --out Experiments/pilot-g1-v2 \
+  --threads 2 --shard 0/3 --seconds 5 --resume
+```
+
+The first 20,000 tiles on shard 0/3 start at odd m=100000579 and include 1,974,588
+signed candidates and 5,482 sieve survivors/exact-square tests. This is a partial
+prefix of the three-factor stage, not exhaustion of either factor-count family.
+The declared `m_max=10^13` correctly selects arbitrary precision even though this
+initial work is near m=10^8. There is no injected root or positive control shortcut.
+
+Run the fixed-work worker sweep with the same cached data:
+
+```sh
+python3 tools/benchmark_pilot.py --exe build/diophantasmagoria \
+  --config configs/pilot-g1.json --db Experiments/g1-2m.roots.jsonl \
+  --out Experiments/benchmark-pilot-local --max-tasks 20000 --repeats 3
+```
+
+The tool compares counters **and the final generator/root/k cursor** across every
+worker count, separates cache setup from search, records a first-tile trace,
+and requires nonzero sieve survivors. Omitting `--db` generates one cache in the
+benchmark output directory and reports precomputation separately. For a pilot
+with the full cache, substitute `configs/campaign-g1.json` and your unchanged
+`Experiments/g1-20m.roots.jsonl`; retain the explicit short work budget.
+
+Start with **two workers** on the measured local workload; one and two are close,
+and increasing workers did not deliver linear speedup. The 64-tile durable
+commit policy remains the main bottleneck. Rerun this sweep on each server
+before choosing its worker count. See the actual
+[post-filter measurements](Experiments/reports/issue2/README.md).
+
 ## Three independent hosts
 
 These **opt-in, potentially very large** presets are not benchmark estimates.
-Prepare one database; the 20,000,000 prime limit is configurable, not required
+Reuse your existing complete g1 database unchanged. If none is available, prepare
+one with the command below. The 20,000,000 prime limit is configurable, not required
 for a smoke run. SIGINT/SIGTERM abort precomputation without publishing a partial
 cache. Interrupted precomputation restarts from scratch.
 
@@ -88,6 +140,11 @@ cache. Interrupted precomputation restarts from scratch.
 build/diophantasmagoria roots --polynomial g1 --limit 20000000 \
   --out Experiments/g1-20m.roots.jsonl
 ```
+
+**Upgrade from issue #1:** keep your root database, but start every host with the
+new binary and a **new output directory**. Pre-filter checkpoints are rejected:
+the eligible prime list and its shard indices have changed. Old and new results
+belong to different domain fingerprints and cannot be merged as one campaign.
 
 Copy exactly `configs/campaign-g1.json` and `Experiments/g1-20m.roots.jsonl` to
 **each** host, along with the same source revision/build and the Python tools.
@@ -98,36 +155,38 @@ one plan; this does not enumerate the campaign or invent a total/ETA:
 
 ```sh
 build/diophantasmagoria search --config configs/campaign-g1.json \
-  --db Experiments/g1-20m.roots.jsonl --out Experiments/host0-g1 \
-  --threads 16 --shard 0/3 --dry-run
+  --db Experiments/g1-20m.roots.jsonl --out Experiments/host0-g1-v2 \
+  --threads 2 --shard 0/3 --dry-run
 ```
 
 Host 0:
 
 ```sh
 build/diophantasmagoria search --config configs/campaign-g1.json \
-  --db Experiments/g1-20m.roots.jsonl --out Experiments/host0-g1 \
-  --threads 16 --shard 0/3 --seconds 3600
+  --db Experiments/g1-20m.roots.jsonl --out Experiments/host0-g1-v2 \
+  --threads 2 --shard 0/3 --seconds 3600
 ```
 
 Host 1:
 
 ```sh
 build/diophantasmagoria search --config configs/campaign-g1.json \
-  --db Experiments/g1-20m.roots.jsonl --out Experiments/host1-g1 \
-  --threads 16 --shard 1/3 --seconds 3600
+  --db Experiments/g1-20m.roots.jsonl --out Experiments/host1-g1-v2 \
+  --threads 2 --shard 1/3 --seconds 3600
 ```
 
 Host 2:
 
 ```sh
 build/diophantasmagoria search --config configs/campaign-g1.json \
-  --db Experiments/g1-20m.roots.jsonl --out Experiments/host2-g1 \
-  --threads 16 --shard 2/3 --seconds 3600
+  --db Experiments/g1-20m.roots.jsonl --out Experiments/host2-g1-v2 \
+  --threads 2 --shard 2/3 --seconds 3600
 ```
 
 The same invocations were exercised with the small configuration in the
-integration suite; the 20-million-prime, hour-long campaign was **not** run here.
+integration suite. The new bounded production-shaped benchmark uses an explicitly
+declared cache covering primes through 2,000,000 and realistic `10^8 <= m <= 10^13` bounds;
+the 20-million-prime, hour-long campaign was **not** run here.
 For g2, generate a separate database with `--polynomial g2` and use
 `configs/campaign-g2.json` and separate output paths. Coefficient/cache mismatches
 are rejected.
@@ -146,8 +205,8 @@ same configuration, cache and shard; changing the local thread count is allowed:
 
 ```sh
 build/diophantasmagoria search --config configs/campaign-g1.json \
-  --db Experiments/g1-20m.roots.jsonl --out Experiments/host0-g1 \
-  --threads 8 --shard 0/3 --seconds 3600 --resume
+  --db Experiments/g1-20m.roots.jsonl --out Experiments/host0-g1-v2 \
+  --threads 2 --shard 0/3 --seconds 3600 --resume
 ```
 
 After SIGKILL, the last uncommitted batch can be replayed. Stable witness IDs
@@ -165,9 +224,9 @@ domain or shard count cannot reuse an old checkpoint. Merge each shell separatel
 After copying the three run directories onto one machine:
 
 ```sh
-python3 tools/merge.py Experiments/host0-g1 Experiments/host1-g1 \
-  Experiments/host2-g1 --out Experiments/merged-g1
-python3 tools/oracle.py verify --results Experiments/merged-g1/results.jsonl
+python3 tools/merge.py Experiments/host0-g1-v2 Experiments/host1-g1-v2 \
+  Experiments/host2-g1-v2 --out Experiments/merged-g1-v2
+python3 tools/oracle.py verify --results Experiments/merged-g1-v2/results.jsonl
 ```
 
 Merging verifies witnesses and provenance, rejects incompatible domains/shard
@@ -183,7 +242,13 @@ All intervals are inclusive. Configuration supports a named `polynomial` or
 and either `k_min`/`k_max` or disjoint `k_ranges`. Explicit `moduli: [[p,q,...],...]`
 replaces prime-limit/factor-count generation. It still uses database prime roots
 and normal CRT. Custom database generation accepts `--coefficients E,C,B,A`.
-All factors must be distinct primes present in the cache.
+All factors must be distinct primes present in the cache. For g1/g2, explicit
+lists retain their requested indices for sharding, but even entries are reported
+as analytically excluded and skipped before CRT. An all-excluded explicit list
+finishes with zero tasks. Dry-run/manifest `analytical_exclusions` describes this
+rule and the exact excluded explicit-list count; generated excluded-region totals
+are not enumerated. `domain_definition.local_filter` and the generator version
+bind the behavior to the fingerprint. No prime/root database rows are removed.
 
 Supported limits: `2 <= m <= 2^63-1`, `|k| <= 10^12`, prime limit at most
 100,000,000, at most five factors, and at most 1,000,000 CRT roots per modulus.
@@ -200,7 +265,7 @@ never used. All potentially large JSON integers are decimal **strings**.
 for campaigns. `--no-sieve` is a measurement control with identical coverage.
 The immutable domain fingerprint excludes worker count, timing limits, and
 arithmetic/sieve implementation choices; it includes coefficients, database
-identity, generator/tile version, factors, modulus bounds, signs and k intervals.
+identity, generator/filter/tile version, factors, modulus bounds, signs and k intervals.
 
 Each run writes `manifest.json`, `checkpoint.json`, `results.jsonl`, and
 `report.json`. Reports include source/build identity, setup and search timing,
@@ -212,7 +277,7 @@ replay overhead is not retrospectively recovered. Manifest settings describe the
 latest invocation; mixed worker/arithmetic histories can be distinguished by
 witness build identities and cumulative native/big task counts.
 
-## Reproducible benchmarks and oracle
+## Small-domain benchmark and oracle
 
 ```sh
 python3 tools/benchmark.py --exe build/diophantasmagoria \
@@ -221,7 +286,9 @@ python3 tools/oracle.py box --polynomial synthetic --bound 8
 python3 tools/oracle.py structured --config configs/smoke.json
 ```
 
-The benchmark fixes the complete candidate domain for every worker count and
+This tiny-prime benchmark is a correctness/performance diagnostic, not a
+production-readiness claim. Use `benchmark_pilot.py` above for realistic modulus
+sizes. The small benchmark fixes the complete candidate domain for every worker count and
 includes a no-sieve baseline. It skips requested worker counts above CPU affinity.
 Its reports retain process wall time, setup/precomputation, counters, timing
 breakdown and memory. Selected actual local measurements are in

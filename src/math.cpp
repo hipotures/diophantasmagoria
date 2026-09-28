@@ -33,6 +33,9 @@ Poly polynomial(const std::string &name) {
         return {0, -1, 0, 1};
     throw std::runtime_error("Unknown polynomial: " + name);
 }
+bool excludes_even_square_free(const Poly &a) {
+    return a == polynomial("g1") || a == polynomial("g2");
+}
 Big eval(const Poly &a, const Big &x) {
     return evaluate(a, x);
 }

@@ -11,6 +11,8 @@ using Poly = std::array<Big, 4>; // Constant coefficient first.
 Big integer(const std::string &s);
 std::string decimal(const Big &n);
 Poly polynomial(const std::string &name);
+// Certified only for the exact g1/g2 coefficients and square-free moduli.
+bool excludes_even_square_free(const Poly &a);
 Big eval(const Poly &a, const Big &x);
 std::vector<uint32_t> primes(uint32_t limit);
 std::vector<U> roots(const Poly &a, U p);

@@ -36,6 +36,49 @@ None has an integer root. The production structured domain excludes d=0;
 the Python coordinate-box oracle tests it explicitly for `x^3-x` at x=-1,0,1.
 It never divides by zero.
 
+## Certified exclusion of even square-free moduli
+
+Before generating combinations, `even-square-free-g1-g2-v1` recognizes the exact
+coefficient tuples `[-1,3,1,1]` and `[1,0,1,6]`. Named and coefficient-specified
+inputs therefore behave identically. Only for these polynomials, prime 2 is
+removed from the generator's eligible list. The root database remains complete,
+including its correct root 1 modulo 2; its format, coverage and checksum do not
+change. Other coefficient tuples retain 2 whenever they have a root modulo 2.
+
+For an even square-free m, either sign of d gives `d=2 (mod 4)`. Thus y and z
+have the same parity. If both are odd, `y*z*d` has 2-adic valuation 1. If both
+are even, writing `y=2a, z=2b` gives `8ab(a+b)`: a+b is odd, so ab is even and
+the product is divisible by 16. These cover all possibilities, including zero.
+
+The left side is always even. Both targets consequently require odd x:
+
+* For g1, every odd x gives `G(x)=4 (mod 8)`, with valuation 2.
+* For g2, `x=1 (mod 4)` gives `G(x)=8 (mod 16)` and `x=3 (mod 4)` gives
+  `G(x)=12 (mod 16)`, with valuations 3 and 2 respectively.
+
+Neither target can match valuation 1 or divisibility by 16. Hence the whole
+even square-free subtree contains no integer solutions, for either sign of d
+and every signed k. For g1 this also makes the discriminant 12 modulo 16.
+This proof does **not** exclude every even modulus: future prime-power support
+would need a separate filter for other values of v2(d).
+
+An independent test exhausts all 4096 triples `(x,y,z)` modulo 16 for each target
+and confirms that no triple satisfies both `y+z=2 (mod 4)` and the equation.
+The positive control `x^3-x` has `(-2,3,-1)` at d=2 and `(2,1,-3)` at d=-2;
+these witnesses remain discoverable in both named and custom-coefficient modes.
+
+Explicit even square-free moduli for g1/g2 are reported as analytically excluded
+and skipped before CRT/task creation. Their exact count in the requested list
+is reported before sharding. For generated domains the entire region is excluded
+without enumeration; its modulus/root/candidate totals are **not** claimed or
+included in searched-work counters. Exhaustion covers the remaining enumerated
+work plus this analytic certificate, not all integer triples.
+
+Tests compare every retained `(m,r,k,sign)` with an **unfiltered** reference,
+separately accounting for the removed even candidates; the full solution set
+must still agree. Generator-level tests inspect the prime list and outputs
+before CRT, so an accidental late sieve-only implementation would fail.
+
 ## Prime roots and CRT
 
 A bounded Eratosthenes sieve supplies all primes through the declared limit.

@@ -29,7 +29,12 @@ modulus recomputes CRT from cached roots once.
 
 ## Generator, scheduling and shards
 
-Eligible primes are sorted primes with at least one root. For each configured
+Eligible primes are sorted primes with at least one root, after applying the
+coefficient-certified local filter. `even-square-free-g1-g2-v1` removes 2 for
+exact g1/g2 coefficients **before** enumerating any combination. It does not
+modify the database or affect generic polynomials. The modulo-16 proof and its
+square-free assumptions are in [mathematics.md](mathematics.md).
+For each configured
 factor count in ascending order, a resumable depth-first stack enumerates
 increasing prime-index combinations lexicographically. Before extending a
 prefix, division checks multiplication bounds. The smallest possible remaining
@@ -41,12 +46,14 @@ work are kept, not all prime triples/quadruples or all campaign tasks.
 For factor count f>=2, the prefix consisting of its first two eligible-prime
 indices `(i,j)` belongs to `(i*N+j) % shard_count`, where N is the eligible-prime
 count for the domain. For f=1 the owner is `i % shard_count`. Explicit factored
-moduli are sorted lexicographically and assigned by list index modulo shard
-count. Assignment happens before descending into expensive suffix enumeration
+moduli are sorted lexicographically and assigned by their original requested-list
+index modulo shard count. Certified even entries are skipped before CRT without
+renumbering this list. An all-excluded explicit list completes with zero tasks. Assignment happens before descending into expensive suffix enumeration
 or doing CRT. Hosts visit prefix indices but do not traverse each other's huge
 suffix combination spaces. Factorization determines exactly one owner; modulo
-partitioning is disjoint and exhaustive. The prime list and shard layout must
-be identical on all hosts. This partition is deterministic, not a promise of
+partitioning is disjoint and exhaustive. The **filtered** prime list and shard layout must
+be identical on all hosts. Generator version `lexicographic-prefix2-v2` and the
+local-filter version/activation are included in the domain fingerprint. This partition is deterministic, not a promise of
 equal runtime or equal task counts across hosts.
 
 Each modulus's sorted CRT roots are tiled into at most 16 roots and consecutive
@@ -115,6 +122,12 @@ The immutable domain hash covers coefficients, cache checksum, generator/tile
 version, prime coverage, factor counts/explicit factorizations, modulus bounds,
 signs, and disjoint k ranges. A checkpoint separately binds the shard count and
 index, and the trace setting. Worker count is intentionally changeable.
+Every new checkpoint also records generator/filter versions explicitly. All
+pre-filter v1 checkpoints are rejected with an instruction to keep the root
+cache and use a new output directory, before any cursor restoration. There is
+no automatic old-cursor conversion, including for generic polynomials. Because
+removing 2 changes index-based sharding, all hosts must restart on the new domain;
+do not mix old and new host results. Existing root databases remain reusable.
 Thread scheduling cannot change roots or candidate coordinates. Tests compare
 exact work IDs, `(m,r,k,sign)` sets and witnesses across one/multiple workers and
 all three shards, not merely hit counts.
@@ -124,7 +137,11 @@ all three shards, not merely hit counts.
 Every integer field written by C++ is a decimal string. JSON arrays remain
 arrays when empty. `manifest.json` includes the canonical domain definition,
 SHA-256 identities, commit, source-content hash, compiler, Boost and build type.
-`report.json` adds committed counters, elapsed search time, setup time,
+Dry-run, manifest and report output include `analytical_exclusions`: the rule,
+its applicable region, its pre-generation application, and the exact number of
+excluded explicit entries across the requested list. Generated excluded-modulus
+counts are `not_enumerated`, not invented totals. Counters describe only issued
+work, never the analytically excluded candidates. `report.json` adds committed counters, elapsed search time, setup time,
 generator/CRT wall time, summed worker candidate/sieve and exact-square times,
 persistence wall time, result-record-chain checksum and byte boundary, and peak RSS (Linux VmHWM where
 available, getrusage fallback). Candidate time includes reconstruction,

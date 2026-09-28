@@ -13,6 +13,8 @@
 namespace dio {
 namespace {
 using Clock = std::chrono::steady_clock;
+constexpr auto generator_version = "lexicographic-prefix2-v2";
+constexpr auto filter_version = "even-square-free-g1-g2-v1";
 double elapsed(Clock::time_point a) {
     return std::chrono::duration<double>(Clock::now() - a).count();
 }
@@ -41,6 +43,7 @@ U product(const std::vector<U> &factors) {
 Domain domain(const Json &config, const Database &db) {
     Domain d;
     d.a = get_poly(config);
+    d.exclude_even = excludes_even_square_free(d.a);
     if (d.a != db.a)
         throw std::runtime_error("Database polynomial does not match configuration");
     d.m_min = bounded(config, "m_min", 1);
@@ -62,6 +65,8 @@ Domain domain(const Json &config, const Database &db) {
             if (m < d.m_min || m > d.m_max)
                 throw std::runtime_error("Explicit modulus outside m bounds");
             d.moduli.push_back(ps);
+            if (d.exclude_even && ps.front() == 2)
+                ++d.excluded_explicit_moduli;
         }
         if (d.moduli.empty())
             throw std::runtime_error("Explicit modulus list is empty");
@@ -105,7 +110,11 @@ Domain domain(const Json &config, const Database &db) {
             throw std::runtime_error("Inverted or overlapping k ranges");
     auto &c = d.canonical;
     c.put("schema", "dio-domain-v1");
-    c.put("generator", "lexicographic-prefix2-v1");
+    c.put("generator", generator_version);
+    Json filter;
+    filter.put("version", filter_version);
+    filter.put("exclude_even_square_free", d.exclude_even ? "true" : "false");
+    c.add_child("local_filter", filter);
     c.put("tile", "roots16-k64-v1");
     c.add_child("coefficients", coefficients(d.a));
     c.put("root_database", db.checksum);
@@ -133,7 +142,7 @@ Domain domain(const Json &config, const Database &db) {
 }
 Generator::Generator(const Domain &dom, const Database &db, U s, U n) : d(dom), shard(s), count(n) {
     for (const auto &[p, rs] : db.data)
-        if (p <= d.prime_limit && !rs.empty())
+        if (p <= d.prime_limit && !rs.empty() && !(d.exclude_even && p == 2))
             eligible.push_back(p);
 }
 bool Generator::next(std::vector<U> &factors) {
@@ -144,6 +153,10 @@ bool Generator::next(std::vector<U> &factors) {
                 return false;
             }
             U i = explicit_pos++;
+            // Retain requested-list indices for explicit sharding, but never issue
+            // an analytically excluded modulus to the CRT/task source.
+            if (d.exclude_even && d.moduli[i].front() == 2)
+                continue;
             if (i % count == shard) {
                 factors = d.moduli[i];
                 return true;
@@ -631,6 +644,18 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
     manifest.put("commit_batch_tiles", "64");
     manifest.put("trace", o.trace ? "true" : "false");
     manifest.put("planning", "Streaming domain; total work and ETA are not enumerated");
+    Json exclusions;
+    exclusions.put("rule", filter_version);
+    exclusions.put("region", d.exclude_even ? "All even square-free moduli" : "None");
+    exclusions.put("basis",
+                   "Exact coefficient recognition; modulo-16 certificate; both signs of d");
+    exclusions.put("application", "Before combination generation or explicit-modulus CRT");
+    exclusions.put("generated_moduli_excluded", d.exclude_even ? "not_enumerated" : "0");
+    exclusions.put("explicit_moduli_excluded", d.excluded_explicit_moduli);
+    exclusions.put("explicit_count_scope", "Entire requested list, before sharding");
+    exclusions.put("counter_scope",
+                   "Enumerated work only; analytically excluded candidates are not counted");
+    manifest.add_child("analytical_exclusions", exclusions);
     manifest.put("task_limit", o.max_tasks);
     manifest.put("time_limit_seconds", o.seconds);
     if (o.dry_run) {
@@ -660,6 +685,11 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
     }
     if (continuing) {
         Json p = unwrap(checkpoint);
+        if (p.get<std::string>("generator_version", "") != generator_version ||
+            p.get<std::string>("filter_version", "") != filter_version)
+            throw std::runtime_error(
+                "Checkpoint generator/filter version mismatch: pre-filter checkpoints are "
+                "incompatible. Keep the root database and start a new output directory");
         if (p.get<std::string>("domain") != d.fingerprint || p.get<U>("shard") != o.shard ||
             p.get<U>("shards") != o.shards ||
             p.get<std::string>("trace") != (o.trace ? "true" : "false"))
@@ -700,6 +730,8 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
         auto at = Clock::now();
         Json p;
         p.put("schema", "dio-checkpoint-v1");
+        p.put("generator_version", generator_version);
+        p.put("filter_version", filter_version);
         p.put("domain", d.fingerprint);
         p.put("shard", o.shard);
         p.put("shards", o.shards);
