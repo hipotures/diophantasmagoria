@@ -1,0 +1,35 @@
+Start testing: Sep 28 22:27 UTC
+----------------------------------------------------------
+1/2 Testing: unit
+1/2 Test: unit
+Command: "/home/user/DEV/diophantasmagoria/build/unit_tests"
+Directory: /home/user/DEV/diophantasmagoria/build
+"unit" start time: Sep 28 22:27 UTC
+Output:
+----------------------------------------------------------
+All mathematical unit tests passed
+<end of output>
+Test time =   0.12 sec
+----------------------------------------------------------
+Test Passed.
+"unit" end time: Sep 28 22:27 UTC
+"unit" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/2 Testing: integration
+2/2 Test: integration
+Command: "/usr/bin/python3" "/home/user/DEV/diophantasmagoria/tests/integration.py" "/home/user/DEV/diophantasmagoria/build/diophantasmagoria"
+Directory: /home/user/DEV/diophantasmagoria/build
+"integration" start time: Sep 28 22:27 UTC
+Output:
+----------------------------------------------------------
+Integration suite passed: 29034 tiny-domain candidates, 838 unique witnesses; artifacts: /home/user/DEV/diophantasmagoria/Experiments/test-28115
+<end of output>
+Test time =  11.40 sec
+----------------------------------------------------------
+Test Passed.
+"integration" end time: Sep 28 22:27 UTC
+"integration" time elapsed: 00:00:11
+----------------------------------------------------------
+
+End testing: Sep 28 22:27 UTC

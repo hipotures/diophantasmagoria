@@ -1,0 +1,1495 @@
+{
+  "platform": "Linux-7.0.0-34-generic-x86_64-with-glibc2.43",
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "lscpu": "Architecture:                            x86_64\nCPU op-mode(s):                          32-bit, 64-bit\nAddress sizes:                           48 bits physical, 48 bits virtual\nByte Order:                              Little Endian\nCPU(s):                                  16\nOn-line CPU(s) list:                     0-15\nVendor ID:                               AuthenticAMD\nModel name:                              AMD Ryzen 9 7950X3D 16-Core Processor\nCPU family:                              25\nModel:                                   97\nThread(s) per core:                      1\nCore(s) per socket:                      16\nSocket(s):                               1\nStepping:                                2\nBogoMIPS:                                8400.02\nFlags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm rep_good nopl xtopology cpuid extd_apicid tsc_known_freq pni pclmulqdq ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy svm cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw perfctr_core ssbd perfmon_v2 ibrs ibpb stibp ibrs_enhanced vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves user_shstk avx512_bf16 clzero xsaveerptr wbnoinvd arat npt lbrv nrip_save tsc_scale vmcb_clean flushbyasid pausefilter pfthreshold vgif vnmi avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid overflow_recov succor fsrm flush_l1d\nVirtualization:                          AMD-V\nHypervisor vendor:                       KVM\nVirtualization type:                     full\nL1d cache:                               1 MiB (16 instances)\nL1i cache:                               1 MiB (16 instances)\nL2 cache:                                8 MiB (16 instances)\nL3 cache:                                256 MiB (16 instances)\nNUMA node(s):                            1\nNUMA node0 CPU(s):                       0-15\nVulnerability Gather data sampling:      Not affected\nVulnerability Ghostwrite:                Not affected\nVulnerability Indirect target selection: Not affected\nVulnerability Itlb multihit:             Not affected\nVulnerability L1tf:                      Not affected\nVulnerability Mds:                       Not affected\nVulnerability Meltdown:                  Not affected\nVulnerability Mmio stale data:           Not affected\nVulnerability Old microcode:             Not affected\nVulnerability Reg file data sampling:    Not affected\nVulnerability Retbleed:                  Not affected\nVulnerability Spec rstack overflow:      Mitigation; Safe RET\nVulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; STIBP disabled; PBRSB-eIBRS Not affected; BHI Not affected\nVulnerability Srbds:                     Not affected\nVulnerability Tsa:                       Mitigation; Clear CPU buffers\nVulnerability Tsx async abort:           Not affected\nVulnerability Vmscape:                   Not affected\n",
+  "configuration": {
+    "polynomial": "g1",
+    "prime_limit": "2000000",
+    "factor_counts": [
+      3,
+      4
+    ],
+    "m_min": "100000000",
+    "m_max": "10000000000000",
+    "k_min": "-16",
+    "k_max": "16"
+  },
+  "cache_reused": true,
+  "database_header": {
+    "schema": "dio-roots-v1",
+    "algorithm": "finite-field-gcd-split-v1",
+    "coefficients": [
+      "-1",
+      "3",
+      "1",
+      "1"
+    ],
+    "coverage": "all-primes",
+    "prime_limit": "2000000"
+  },
+  "precomputation_wall_seconds": null,
+  "precomputation": null,
+  "first_tile_report": {
+    "schema": "dio-run-v1",
+    "domain_definition": {
+      "schema": "dio-domain-v1",
+      "generator": "lexicographic-prefix2-v2",
+      "local_filter": {
+        "version": "even-square-free-g1-g2-v1",
+        "exclude_even_square_free": "true"
+      },
+      "tile": "roots16-k64-v1",
+      "coefficients": [
+        "-1",
+        "3",
+        "1",
+        "1"
+      ],
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "m_min": "100000000",
+      "m_max": "10000000000000",
+      "prime_limit": "2000000",
+      "factor_counts": [
+        "3",
+        "4"
+      ],
+      "moduli": [],
+      "k_ranges": [
+        [
+          "-16",
+          "16"
+        ]
+      ],
+      "signs": "+1,-1"
+    },
+    "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+    "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+    "shard": "0",
+    "shards": "3",
+    "threads": "1",
+    "arithmetic": "big",
+    "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+    "compiler": "GNU-15.2.0",
+    "boost": "1_90",
+    "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+    "build_type": "Release",
+    "setup_seconds": "0.17415530799999998",
+    "sieve": "64,63,65,11",
+    "commit_batch_tiles": "64",
+    "trace": "true",
+    "planning": "Streaming domain; total work and ETA are not enumerated",
+    "analytical_exclusions": {
+      "rule": "even-square-free-g1-g2-v1",
+      "region": "All even square-free moduli",
+      "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+      "application": "Before combination generation or explicit-modulus CRT",
+      "generated_moduli_excluded": "not_enumerated",
+      "explicit_moduli_excluded": "0",
+      "explicit_count_scope": "Entire requested list, before sharding",
+      "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+    },
+    "task_limit": "1",
+    "time_limit_seconds": "0",
+    "complete": "false",
+    "counters": {
+      "tasks": "1",
+      "moduli": "1",
+      "roots": "1",
+      "candidates": "66",
+      "nonnegative": "34",
+      "survivors": "1",
+      "squares": "1",
+      "hits": "0",
+      "native_tasks": "0",
+      "big_tasks": "1",
+      "out_of_order_batches": "0",
+      "candidate_seconds": "0.00021898999999999999",
+      "square_seconds": "1.7489999999999999e-06"
+    },
+    "search_seconds": "0.0057155289999999996",
+    "generation_crt_seconds": "0.00089266699999999998",
+    "persistence_seconds": "0.0044434239999999996",
+    "result_checksum_algorithm": "sha256-record-chain-v1",
+    "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "result_bytes": "0",
+    "peak_rss_kib": "26736",
+    "meaning": "Partial configured shard; resume required"
+  },
+  "first_candidate": {
+    "task": "eeed8f6265411a978f25f70dfe7440ff07ef2b60a44ebd95818701048fca6b54",
+    "m": "100000579",
+    "r": "27660770",
+    "k": "-16",
+    "sign": "1"
+  },
+  "measurements": [
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "1",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.17369956",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "0",
+        "candidate_seconds": "0.046730557000000963",
+        "square_seconds": "0.0018832289999999906"
+      },
+      "search_seconds": "0.46234631100000001",
+      "generation_crt_seconds": "0.031575334999999684",
+      "persistence_seconds": "0.39877524299999961",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26756",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.6647456749997218,
+      "candidates_per_search_second": 4270798.648158782,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "0"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "2",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.172717862",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "313",
+        "candidate_seconds": "0.048935770000001218",
+        "square_seconds": "0.0019867689999999985"
+      },
+      "search_seconds": "0.47267740499999999",
+      "generation_crt_seconds": "0.034588996999999538",
+      "persistence_seconds": "0.42381816399999983",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26772",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.6747108300005493,
+      "candidates_per_search_second": 4177453.7541095284,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "0"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.17388298799999999",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "313",
+        "candidate_seconds": "0.053140502000000853",
+        "square_seconds": "0.0021829400000000043"
+      },
+      "search_seconds": "0.47352630099999998",
+      "generation_crt_seconds": "0.034092097999999738",
+      "persistence_seconds": "0.40206743200000039",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26784",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.6752483979998942,
+      "candidates_per_search_second": 4169964.785123942,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "0"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "8",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.17739951599999998",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "313",
+        "candidate_seconds": "0.065848299000000193",
+        "square_seconds": "0.0030946409999999913"
+      },
+      "search_seconds": "0.51027508700000002",
+      "generation_crt_seconds": "0.036469584000000409",
+      "persistence_seconds": "0.42681801500000022",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26844",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.7162575490001473,
+      "candidates_per_search_second": 3869653.9382491936,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "0"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "16",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.17377006",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "313",
+        "candidate_seconds": "0.077447719000000789",
+        "square_seconds": "0.0035719809999999949"
+      },
+      "search_seconds": "0.52828768199999998",
+      "generation_crt_seconds": "0.035257334999999543",
+      "persistence_seconds": "0.43622035200000014",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26940",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.7312568440001996,
+      "candidates_per_search_second": 3737713.498305645,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "0"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "2",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.178458951",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "312",
+        "candidate_seconds": "0.048531055000000899",
+        "square_seconds": "0.0019867780000000015"
+      },
+      "search_seconds": "0.45158830999999999",
+      "generation_crt_seconds": "0.033973075999999401",
+      "persistence_seconds": "0.40323154699999963",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26728",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.6581090199997561,
+      "candidates_per_search_second": 4372540.112918335,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "1"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.179738707",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "313",
+        "candidate_seconds": "0.052486650000000544",
+        "square_seconds": "0.0022451150000000011"
+      },
+      "search_seconds": "0.47926964",
+      "generation_crt_seconds": "0.034184131999999597",
+      "persistence_seconds": "0.40916784100000014",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26796",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.687662471999829,
+      "candidates_per_search_second": 4119993.914073088,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "1"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "8",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.174791584",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "313",
+        "candidate_seconds": "0.067847011000000151",
+        "square_seconds": "0.0030715849999999986"
+      },
+      "search_seconds": "0.52491164400000001",
+      "generation_crt_seconds": "0.037227856000000246",
+      "persistence_seconds": "0.43770181700000005",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26784",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.7301186589993449,
+      "candidates_per_search_second": 3761753.0922975675,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "1"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "16",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.17701091599999999",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "313",
+        "candidate_seconds": "0.075511965000000722",
+        "square_seconds": "0.0035023209999999801"
+      },
+      "search_seconds": "0.56901471400000003",
+      "generation_crt_seconds": "0.036436453000000202",
+      "persistence_seconds": "0.47324809300000009",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26912",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.7756497929995021,
+      "candidates_per_search_second": 3470187.943153962,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "1"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "1",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.17842740000000001",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "0",
+        "candidate_seconds": "0.048113673000001148",
+        "square_seconds": "0.0018789949999999996"
+      },
+      "search_seconds": "0.48023427600000002",
+      "generation_crt_seconds": "0.031646369999999549",
+      "persistence_seconds": "0.41531400500000015",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26764",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.6870673559997158,
+      "candidates_per_search_second": 4111718.1731526386,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "1"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.181514911",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "313",
+        "candidate_seconds": "0.054181894000000418",
+        "square_seconds": "0.0021376230000000086"
+      },
+      "search_seconds": "0.46370290600000003",
+      "generation_crt_seconds": "0.036325912000000189",
+      "persistence_seconds": "0.38675218900000058",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26780",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.6733205350001299,
+      "candidates_per_search_second": 4258304.130619358,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "2"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "8",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.186757322",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "313",
+        "candidate_seconds": "0.066121519000000142",
+        "square_seconds": "0.0030979029999999891"
+      },
+      "search_seconds": "0.51311678699999996",
+      "generation_crt_seconds": "0.035687199999999523",
+      "persistence_seconds": "0.42972050699999997",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26844",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.7282927550004388,
+      "candidates_per_search_second": 3848223.348030904,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "2"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "16",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.172235575",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "313",
+        "candidate_seconds": "0.082171412999999763",
+        "square_seconds": "0.003605064999999995"
+      },
+      "search_seconds": "0.53153236100000001",
+      "generation_crt_seconds": "0.036463654999999845",
+      "persistence_seconds": "0.43212082299999988",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26912",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.732814750000216,
+      "candidates_per_search_second": 3714897.0502663334,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "2"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "1",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.17884181099999999",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "0",
+        "candidate_seconds": "0.047559665000001",
+        "square_seconds": "0.0018959919999999907"
+      },
+      "search_seconds": "0.46288679999999999",
+      "generation_crt_seconds": "0.033646421999999586",
+      "persistence_seconds": "0.39761749599999985",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26756",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.672063789999811,
+      "candidates_per_search_second": 4265811.857240259,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "2"
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "true"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "-1",
+          "3",
+          "1",
+          "1"
+        ],
+        "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+        "m_min": "100000000",
+        "m_max": "10000000000000",
+        "prime_limit": "2000000",
+        "factor_counts": [
+          "3",
+          "4"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-16",
+            "16"
+          ]
+        ],
+        "signs": "+1,-1"
+      },
+      "domain": "5b02bdf3bc592bd8e92cdf3c198216b668641516861060d31f464336ead2fe06",
+      "root_database": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+      "shard": "0",
+      "shards": "3",
+      "threads": "2",
+      "arithmetic": "big",
+      "build_commit": "8c22c3461328b35c7e6a82e5ada9970a64baa21a",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "d3be41ecfa85d8d852bede5d6e2099d2b63243576c57c66404d828ecda1d25aa",
+      "build_type": "Release",
+      "setup_seconds": "0.172276455",
+      "sieve": "64,63,65,11",
+      "commit_batch_tiles": "64",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "All even square-free moduli",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "not_enumerated",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "20000",
+      "time_limit_seconds": "0",
+      "complete": "false",
+      "counters": {
+        "tasks": "20000",
+        "moduli": "20000",
+        "roots": "29918",
+        "candidates": "1974588",
+        "nonnegative": "1024995",
+        "survivors": "5482",
+        "squares": "5482",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "20000",
+        "out_of_order_batches": "313",
+        "candidate_seconds": "0.049483302000001055",
+        "square_seconds": "0.0020363540000000002"
+      },
+      "search_seconds": "0.46607700699999999",
+      "generation_crt_seconds": "0.038985576000000466",
+      "persistence_seconds": "0.40939430799999987",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "26728",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 0.6663962699994954,
+      "candidates_per_search_second": 4236613.199844033,
+      "final_cursor_sha256": "494a0b873c9c3a46099c81f3f4a9b686b7f34e3e7de67219ad63fd545d9e4cdf",
+      "repeat": "2"
+    }
+  ],
+  "interpretation": "Fixed deterministic partial-shard prefix; cache coverage explicitly declared; no server scaling or discovery prediction"
+}

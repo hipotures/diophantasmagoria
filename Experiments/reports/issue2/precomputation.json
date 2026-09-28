@@ -1,0 +1,35 @@
+{
+  "configuration": {
+    "polynomial": "g1",
+    "prime_limit": "2000000",
+    "factor_counts": [
+      3,
+      4
+    ],
+    "m_min": "100000000",
+    "m_max": "10000000000000",
+    "k_min": "-16",
+    "k_max": "16"
+  },
+  "database_header": {
+    "schema": "dio-roots-v1",
+    "algorithm": "finite-field-gcd-split-v1",
+    "coefficients": [
+      "-1",
+      "3",
+      "1",
+      "1"
+    ],
+    "coverage": "all-primes",
+    "prime_limit": "2000000"
+  },
+  "precomputation": {
+    "database": "Experiments/issue2-pilot-measurement/roots.jsonl",
+    "setup_seconds": "1.2203449630000001"
+  },
+  "precomputation_wall_seconds": 1.2233248830007142,
+  "root_database_checksum": "e84913276ab9c99474a17a18032ab51a666e7edcc693b1524d4e5c1dedf2e980",
+  "prime_rows": "148933",
+  "root_bearing_primes_including_2": "99227",
+  "note": "Generated once before the fix commit from the same source-content digest, then reused byte-for-byte in the committed-build benchmark."
+}
