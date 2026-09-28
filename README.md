@@ -136,7 +136,7 @@ additional throughput gain. Rerun the sweep on each server: the producer becomes
 significant at higher worker counts. See [full-cache measurements](Experiments/reports/issue3/README.md).
 
 Search prints a startup message and progress to stderr by default, approximately
-every five seconds at a completed checkpoint, plus a final status. It shows elapsed
+every 60 seconds at a completed checkpoint, plus a final status. It shows elapsed
 search time, cumulative committed tiles/candidates/hits and this invocation's
 average candidates/second. `--progress-seconds 10` changes the interval;
 `--progress-seconds 0` disables these messages. Stdout remains the JSON report.

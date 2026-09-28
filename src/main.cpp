@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
         o.checkpoint_seconds = std::stod(interval, &interval_used);
         if (interval_used != interval.size())
             throw std::runtime_error("Invalid checkpoint interval");
-        std::string progress = get("--progress-seconds", "5");
+        std::string progress = get("--progress-seconds", "60");
         size_t progress_used = 0;
         o.progress_seconds = std::stod(progress, &progress_used);
         if (progress_used != progress.size() || !std::isfinite(o.progress_seconds) ||
