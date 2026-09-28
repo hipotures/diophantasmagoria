@@ -122,11 +122,25 @@ benchmark output directory and reports precomputation separately. For a pilot
 with the full cache, substitute `configs/campaign-g1.json` and your unchanged
 `Experiments/g1-20m.roots.jsonl`; retain the explicit short work budget.
 
-Start with **two workers** on the measured local workload; one and two are close,
-and increasing workers did not deliver linear speedup. The 64-tile durable
-commit policy remains the main bottleneck. Rerun this sweep on each server
-before choosing its worker count. See the actual
-[post-filter measurements](Experiments/reports/issue2/README.md).
+The historical [issue #2 measurements](Experiments/reports/issue2/README.md)
+predate the chunked scheduler. For current production tuning, run the full-cache
+sweep (five million identical logical tiles per run, three repeats):
+
+```sh
+python3 tools/benchmark_parallel.py --exe build/diophantasmagoria \
+  --db Experiments/g1-20m.roots.jsonl --out Experiments/benchmark-parallel-local
+```
+
+Start with **eight workers** on the measured local machine; 16 gives only a small
+additional throughput gain. Rerun the sweep on each server: the producer becomes
+significant at higher worker counts. See [full-cache measurements](Experiments/reports/issue3/README.md).
+
+Production defaults aggregate 256 logical tiles per worker chunk, keep at most
+`max(2, 2*threads)` chunks in flight, and checkpoint after two seconds or 262144
+issued tiles. Tune with `--chunk-tiles`, `--queue-chunks`, `--checkpoint-seconds`,
+and `--checkpoint-tiles`. Each commit drains issued work and fsyncs actual witness
+records before replacing the checkpoint. Empty result appends perform no I/O.
+These settings can change on resume without changing the mathematical domain.
 
 ## Three independent hosts
 
@@ -140,6 +154,13 @@ cache. Interrupted precomputation restarts from scratch.
 build/diophantasmagoria roots --polynomial g1 --limit 20000000 \
   --out Experiments/g1-20m.roots.jsonl
 ```
+
+**Upgrade from issue #2:** stop the old process gracefully, back up its entire run
+directory, then use the new binary with the same config/cache/shard and `--resume`.
+Its checkpoint is accepted and rewritten as schema v2 at the next commit; the
+domain, cursor, stable task IDs and witness chain are unchanged. All scheduler
+settings, including worker count, may change. An authentic issue #2 checkpoint
+is exercised by the migration test. The old binary cannot read the new schema.
 
 **Upgrade from issue #1:** keep your root database, but start every host with the
 new binary and a **new output directory**. Pre-filter checkpoints are rejected:
@@ -156,7 +177,7 @@ one plan; this does not enumerate the campaign or invent a total/ETA:
 ```sh
 build/diophantasmagoria search --config configs/campaign-g1.json \
   --db Experiments/g1-20m.roots.jsonl --out Experiments/host0-g1-v2 \
-  --threads 2 --shard 0/3 --dry-run
+  --threads 8 --shard 0/3 --dry-run
 ```
 
 Host 0:
@@ -164,7 +185,7 @@ Host 0:
 ```sh
 build/diophantasmagoria search --config configs/campaign-g1.json \
   --db Experiments/g1-20m.roots.jsonl --out Experiments/host0-g1-v2 \
-  --threads 2 --shard 0/3 --seconds 3600
+  --threads 8 --shard 0/3 --seconds 3600
 ```
 
 Host 1:
@@ -172,7 +193,7 @@ Host 1:
 ```sh
 build/diophantasmagoria search --config configs/campaign-g1.json \
   --db Experiments/g1-20m.roots.jsonl --out Experiments/host1-g1-v2 \
-  --threads 2 --shard 1/3 --seconds 3600
+  --threads 8 --shard 1/3 --seconds 3600
 ```
 
 Host 2:
@@ -180,36 +201,44 @@ Host 2:
 ```sh
 build/diophantasmagoria search --config configs/campaign-g1.json \
   --db Experiments/g1-20m.roots.jsonl --out Experiments/host2-g1-v2 \
-  --threads 2 --shard 2/3 --seconds 3600
+  --threads 8 --shard 2/3 --seconds 3600
 ```
 
-The same invocations were exercised with the small configuration in the
-integration suite. The new bounded production-shaped benchmark uses an explicitly
-declared cache covering primes through 2,000,000 and realistic `10^8 <= m <= 10^13` bounds;
-the 20-million-prime, hour-long campaign was **not** run here.
+The same interfaces are covered by the three-shard integration tests. The bounded
+benchmark uses the full 20-million-prime cache and this exact campaign config;
+no hour-long or remote-host campaign was started.
 For g2, generate a separate database with `--polynomial g2` and use
 `configs/campaign-g2.json` and separate output paths. Coefficient/cache mismatches
 are rejected.
 
 Reported core/thread counts are not assumed to mean physical cores. Benchmark
-1, 2, 4, 8, 16, 24 and 32 workers where CPU affinity permits. Small filtered
-domains may be dominated by durable checkpoint I/O and may not benefit from more
-workers. `--stop-on-hit` finishes the current local batch and stops **only that
+1, 2, 4, 8, 16, 24 and 32 workers where CPU affinity permits. Short k windows can become producer-limited; more workers then add little
+throughput. `--stop-on-hit` finishes the current bounded queue and stops **only that
 process**, not the other hosts.
 
 ## Stop, resume, extend, merge
 
 Ctrl-C, SIGTERM, `--seconds`, and `--max-tasks` stop issuance and commit finished
 bounded work. No automatic subsequent stage is launched. Use `--resume` with the
-same configuration, cache and shard; changing the local thread count is allowed:
+same configuration, cache and shard; changing local scheduler settings is allowed.
+Run the matching command on each host:
 
 ```sh
+# Host 0
 build/diophantasmagoria search --config configs/campaign-g1.json \
   --db Experiments/g1-20m.roots.jsonl --out Experiments/host0-g1-v2 \
-  --threads 2 --shard 0/3 --seconds 3600 --resume
+  --threads 8 --shard 0/3 --seconds 3600 --resume
+# Host 1
+build/diophantasmagoria search --config configs/campaign-g1.json \
+  --db Experiments/g1-20m.roots.jsonl --out Experiments/host1-g1-v2 \
+  --threads 8 --shard 1/3 --seconds 3600 --resume
+# Host 2
+build/diophantasmagoria search --config configs/campaign-g1.json \
+  --db Experiments/g1-20m.roots.jsonl --out Experiments/host2-g1-v2 \
+  --threads 8 --shard 2/3 --seconds 3600 --resume
 ```
 
-After SIGKILL, the last uncommitted batch can be replayed. Stable witness IDs
+After SIGKILL, the last uncommitted epoch can be replayed. Stable witness IDs
 allow deduplication. A corrupt checkpoint or committed result journal causes an
 error, not a fresh search under an old output directory. Keep the entire run
 directory when copying or backing up state. Only a truncated final append record
@@ -271,8 +300,11 @@ Each run writes `manifest.json`, `checkpoint.json`, `results.jsonl`, and
 `report.json`. Reports include source/build identity, setup and search timing,
 root/CRT generation time, candidate/filter and square time, persistence time,
 counters, memory, shard and workers. Worker times are sums, not elapsed wall
-components. `out_of_order_batches` records batches whose completion order differed
-from generation order. On resume timings/counters cover committed work; crash
+components: generation overlaps workers. `invocation_metrics` reports chunks,
+epochs, checkpoint writes, dirty journal append/fsync counts, queue peak, producer
+wait and epoch drain time. `invocation_cpu_seconds` and `invocation_mean_busy_cpus`
+exclude setup; Linux peak RSS includes setup. `out_of_order_batches` retains its
+legacy name and now counts epochs completed out of order. On resume timings/counters cover committed work; crash
 replay overhead is not retrospectively recovered. Manifest settings describe the
 latest invocation; mixed worker/arithmetic histories can be distinguished by
 witness build identities and cumulative native/big task counts.
@@ -287,8 +319,7 @@ python3 tools/oracle.py structured --config configs/smoke.json
 ```
 
 This tiny-prime benchmark is a correctness/performance diagnostic, not a
-production-readiness claim. Use `benchmark_pilot.py` above for realistic modulus
-sizes. The small benchmark fixes the complete candidate domain for every worker count and
+production-readiness claim. Use `benchmark_parallel.py` above for full-cache production scaling. The small benchmark fixes the complete candidate domain for every worker count and
 includes a no-sieve baseline. It skips requested worker counts above CPU affinity.
 Its reports retain process wall time, setup/precomputation, counters, timing
 breakdown and memory. Selected actual local measurements are in

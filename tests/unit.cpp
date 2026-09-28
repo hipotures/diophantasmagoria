@@ -3,6 +3,7 @@
 #include <iostream>
 #include <random>
 #include <set>
+#include <unistd.h>
 using namespace dio;
 void require(bool b, const char *message) {
     if (!b)
@@ -10,6 +11,31 @@ void require(bool b, const char *message) {
 }
 int main() {
     try {
+        fs::path journal_path =
+            fs::temp_directory_path() / ("dio-journal-test-" + std::to_string(getpid()));
+        {
+            Journal journal(journal_path);
+            fs::remove(journal_path);
+            // An empty append/sync must not even try opening the now missing file.
+            journal.append("");
+            journal.sync();
+            require(journal.append_calls == 0 && journal.sync_calls == 0 &&
+                        !fs::exists(journal_path),
+                    "Empty journal performed I/O");
+        }
+        atomic_write(journal_path, "recovered record\n");
+        {
+            Journal recovered(journal_path, true);
+            recovered.sync();
+            recovered.sync();
+            require(recovered.append_calls == 0 && recovered.sync_calls == 1,
+                    "Recovered uncommitted bytes must sync exactly once");
+            recovered.append("new record\n");
+            recovered.sync();
+            require(recovered.append_calls == 1 && recovered.sync_calls == 2,
+                    "New records must be durable at commit");
+        }
+        fs::remove(journal_path);
         std::vector<Poly> polys = {polynomial("g1"),
                                    polynomial("g2"),
                                    polynomial("regression"),
@@ -127,6 +153,11 @@ int main() {
         }
         Generator gen(d, db, 0, 1);
         std::vector<U> f;
+        auto initial_generator = json(gen.state());
+        gen.yield_deadline = std::chrono::steady_clock::now();
+        require(!gen.next(f) && gen.yielded && json(gen.state()) == initial_generator,
+                "Timed generator yield changed its frontier");
+        gen.yield_deadline = std::chrono::steady_clock::time_point::max();
         while (gen.next(f))
             require(got.insert(f).second, "Duplicate product");
         require(got == expected, "Generator coverage mismatch");

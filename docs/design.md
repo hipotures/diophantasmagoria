@@ -59,14 +59,20 @@ equal runtime or equal task counts across hosts.
 Each modulus's sorted CRT roots are tiled into at most 16 roots and consecutive
 k blocks of at most 64, both signs included. A task has at most 2048 discriminant
 candidates. Its stable ID is SHA-256 of `domain:m:k_first:k_last:root_offset`.
-The producer submits the first task immediately; it does not wait to enumerate
-an entire prefix or campaign. A persistent pool takes work dynamically from a
-queue holding at most 64 tiles. The batch size is fixed across thread counts.
-After at most 64 tasks the producer waits for all to finish and commits. This
-also bounds the outstanding recovery state, hit buffers and trace buffers.
-Search-generation loops poll signals/time limits, and workers finish already
-issued bounded tasks. Exceptions drain the pool and leave the last committed
-checkpoint intact.
+Task IDs are calculated lazily when a witness or trace needs them, using exactly
+that key. The producer generates chunks of 256 logical tiles and feeds a persistent
+worker pool through a bounded FIFO of futures (default twice the worker count,
+minimum two). Generation/CRT overlaps candidate execution. Results are received
+in issuance order, streamed to open journals, and released without retaining an
+entire epoch's output. Workers can complete out of order.
+
+`--chunk-tiles` (1..4096) and `--queue-chunks` (1..2048; zero selects the default)
+control granularity and live buffers; their product cannot exceed 262144 tiles.
+Buffer space is bounded by these limits and the bounded per-tile output, independent
+of campaign length. Trace-heavy or witness-dense synthetic domains should use small
+chunks/queues, e.g. `--chunk-tiles 4 --queue-chunks 4`. CRT remains serial: measured
+producer cost is reported separately rather than speculatively parallelized.
+Exceptions drain outstanding workers before leaving the last checkpoint intact.
 
 A modulus can have up to 1,000,000 CRT roots (normally at most 3^5 for cubics with
 nonzero reductions). CRT materializes that single modulus's root list, not the
@@ -76,18 +82,29 @@ Signals are represented by a lock-free atomic flag. No I/O occurs in a handler.
 
 ## Commit invariant and crash recovery
 
-The checkpoint represents the cursor **after an entirely completed batch**.
-Workers never advance persistent state. The next batch advances only an
+The checkpoint represents the cursor **after an entirely completed epoch**.
+Workers never advance persistent state. The next epoch advances only an
 in-memory generator/candidate cursor while workers run. Consequently no
 out-of-order completion can move the committed cursor past an unfinished tile.
 There is no unsafe "maximum completed task ID" cursor and no growing hole set.
-`out_of_order_batches` makes reordered execution observable in reports.
+Epoch issuance ends after `--checkpoint-seconds` (default 2 seconds) or
+`--checkpoint-tiles` (default 262144 issued tiles), whichever comes first. The
+producer then drains every issued chunk, syncs dirty journals, and commits the
+frontier. Time and work thresholds are scheduling settings, outside the domain
+fingerprint. Long generator traversal also yields at the timed boundary, preserving
+its DFS cursor even when no tile was issued. Checkpoint latency may exceed the
+interval by the remaining bounded worker work and filesystem latency.
+`invocation_metrics.out_of_order_epochs` records reordering in this invocation;
+the historical cumulative counter `out_of_order_batches` now counts epochs.
 
 The order of a commit is:
 
 1. Finish every issued task and independently verify each hit.
-2. Append complete newline-terminated witness records; fsync the result file.
-   An optional coverage trace is also flushed before the checkpoint.
+2. Finish streaming complete newline-terminated witness records; fsync the result
+   journal if dirty. Empty appends do not open/write/fsync it. New empty journals
+   are durably created once at initialization. An optional coverage trace follows
+   the same dirty-file rule. Complete uncommitted records recovered on resume are
+   also synced before advancing a checkpoint, even without a newly found hit.
 3. Write a checksum-protected checkpoint `.new`, fsync it, atomically replace
    `checkpoint.json`, and fsync its directory.
 
@@ -105,29 +122,31 @@ constant-size with respect to completed work, apart from integer digit lengths.
 The final report reuses that chain instead of rescanning the entire result file
 at shutdown. Offline merging computes and checks the chain while verifying records.
 
-SIGINT/SIGTERM or time/work limits stop issuance, finish the bounded batch, and
+SIGINT/SIGTERM or time/work limits stop issuance, finish the bounded queue, and
 write a partial report. The time limit applies to search, after cache setup, and
 can overrun by finishing issued tiles and durable I/O. A hard kill can require
-replay of at most 64 issued tiles plus uncommitted generator traversal. Killing
+replay of at most `--checkpoint-tiles` issued tiles plus uncommitted generator
+traversal (normally limited by the timed interval). Killing
 before initial checkpoint publication can be resumed if the journal is empty;
 nonempty results without any checkpoint cause an actionable error.
 
 A process-level advisory lock prevents concurrent writers to a run directory.
 Filesystem correctness assumes normal local Linux atomic rename/fsync semantics;
 there is no network-filesystem or external-coordinator protocol. Storage errors
-are reported rather than marking a batch complete. Parent-directory fsyncs
+are reported rather than marking an epoch complete. Parent-directory fsyncs
 protect file replacement ordering. Back up the whole run directory together.
 
 The immutable domain hash covers coefficients, cache checksum, generator/tile
 version, prime coverage, factor counts/explicit factorizations, modulus bounds,
 signs, and disjoint k ranges. A checkpoint separately binds the shard count and
 index, and the trace setting. Worker count is intentionally changeable.
-Every new checkpoint also records generator/filter versions explicitly. All
-pre-filter v1 checkpoints are rejected with an instruction to keep the root
-cache and use a new output directory, before any cursor restoration. There is
-no automatic old-cursor conversion, including for generic polynomials. Because
-removing 2 changes index-based sharding, all hosts must restart on the new domain;
-do not mix old and new host results. Existing root databases remain reusable.
+Checkpoint schema `dio-checkpoint-v2` keeps the issue #2 cursor, counters, result
+chain and generator/filter versions unchanged. The reader accepts authentic issue
+#2 `dio-checkpoint-v1` files and rewrites them as v2 at the next commit. Threads,
+chunk size, queue size and epoch cadence may all change on resume. No conversion
+tool or new output directory is required. Older issue #1 pre-filter checkpoints
+remain incompatible: keep the database, but restart all shards in new directories,
+since filtering changed prime indices. Do not mix those different domains.
 Thread scheduling cannot change roots or candidate coordinates. Tests compare
 exact work IDs, `(m,r,k,sign)` sets and witnesses across one/multiple workers and
 all three shards, not merely hit counts.
@@ -169,6 +188,14 @@ sieve modes; change thread counts on resume; exercise disjoint k shells; simulat
 a journal ahead of an old checkpoint and a truncated final append; reject corrupt
 caches, checkpoints and committed results; send actual SIGINT/SIGTERM/SIGKILL;
 and test verification, replay deduplication and missing/incompatible shards.
+The epoch suite uses a library observer in a subprocess driver (no production CLI
+fault flags) to exit without cleanup inside chunks, after streamed witnesses,
+after fsync, and around checkpoint replacement. A delayed first chunk forces
+out-of-order completion across the timed boundary. Resumes change scheduler
+settings and compare full oracle coverage, task IDs, counters and final cursors.
+Journal unit tests prove empty operations do not open a missing file, and recovered
+uncommitted bytes are synced even without a new append. An authentic issue #2
+fixture exercises automatic migration.
 
 CI runs Release and AddressSanitizer/UndefinedBehaviorSanitizer suites on Linux.
 Benchmarks intentionally stop at a bounded fixed domain. Neither the tests nor

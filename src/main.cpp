@@ -29,7 +29,9 @@ int main(int argc, char **argv) {
                          "[--coefficients E,C,B,A] (--limit N | --primes p,q,...) --out FILE\n"
                       << "diophantasmagoria search --config FILE --db FILE --out DIR [--threads N] "
                          "[--shard I/N] [--arithmetic auto|128|big] [--resume] [--dry-run] "
-                         "[--seconds N] [--max-tasks N] [--stop-on-hit] [--trace] [--no-sieve]\n"
+                         "[--seconds N] [--max-tasks N] [--stop-on-hit] [--trace] [--no-sieve] "
+                         "[--chunk-tiles N] [--queue-chunks N] [--checkpoint-tiles N] "
+                         "[--checkpoint-seconds N]\n"
                       << "Independent verification, direct enumeration and merging: python3 "
                          "tools/oracle.py --help; python3 tools/merge.py --help\n";
             return 0;
@@ -41,11 +43,20 @@ int main(int argc, char **argv) {
         const std::set<std::string> flags = {"--resume", "--dry-run", "--stop-on-hit", "--trace",
                                              "--no-sieve"};
         const std::set<std::string> values =
-            cmd == "roots"
-                ? std::set<std::string>{"--polynomial", "--coefficients", "--limit", "--primes",
-                                        "--out"}
-                : std::set<std::string>{"--config", "--db",         "--out",     "--threads",
-                                        "--shard",  "--arithmetic", "--seconds", "--max-tasks"};
+            cmd == "roots" ? std::set<std::string>{"--polynomial", "--coefficients", "--limit",
+                                                   "--primes", "--out"}
+                           : std::set<std::string>{"--config",
+                                                   "--db",
+                                                   "--out",
+                                                   "--threads",
+                                                   "--shard",
+                                                   "--arithmetic",
+                                                   "--seconds",
+                                                   "--max-tasks",
+                                                   "--chunk-tiles",
+                                                   "--queue-chunks",
+                                                   "--checkpoint-tiles",
+                                                   "--checkpoint-seconds"};
         for (int i = 2; i < argc; ++i) {
             std::string k = argv[i];
             if (opts.contains(k))
@@ -118,6 +129,14 @@ int main(int argc, char **argv) {
         o.trace = opts.contains("--trace");
         o.no_sieve = opts.contains("--no-sieve");
         o.max_tasks = u("--max-tasks", 0);
+        o.chunk_tiles = u("--chunk-tiles", 256);
+        o.queue_chunks = u("--queue-chunks", 0);
+        o.checkpoint_tiles = u("--checkpoint-tiles", 262144);
+        std::string interval = get("--checkpoint-seconds", "2");
+        size_t interval_used = 0;
+        o.checkpoint_seconds = std::stod(interval, &interval_used);
+        if (interval_used != interval.size())
+            throw std::runtime_error("Invalid checkpoint interval");
         std::string seconds = get("--seconds", "0");
         size_t used = 0;
         o.seconds = std::stod(seconds, &used);

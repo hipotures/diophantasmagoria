@@ -35,3 +35,7 @@ enable_testing()
 add_test(NAME unit COMMAND unit_tests)
 find_package(Python3 3.11 REQUIRED COMPONENTS Interpreter)
 add_test(NAME integration COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/integration.py $<TARGET_FILE:diophantasmagoria>)
+
+add_executable(fault_search tests/fault_search.cpp)
+target_link_libraries(fault_search PRIVATE core)
+add_test(NAME epochs COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/epochs.py $<TARGET_FILE:diophantasmagoria> $<TARGET_FILE:fault_search>)

@@ -7,6 +7,7 @@
 #include <deque>
 #include <fstream>
 #include <functional>
+#include <future>
 #include <iostream>
 #include <sys/resource.h>
 #include <thread>
@@ -146,10 +147,15 @@ Generator::Generator(const Domain &dom, const Database &db, U s, U n) : d(dom), 
             eligible.push_back(p);
 }
 bool Generator::next(std::vector<U> &factors) {
+    yielded = false;
     if (!d.moduli.empty()) {
         while (explicit_pos < d.moduli.size() && !stopped) {
             if (Clock::now() >= deadline) {
                 stopped = true;
+                return false;
+            }
+            if (Clock::now() >= yield_deadline) {
+                yielded = true;
                 return false;
             }
             U i = explicit_pos++;
@@ -167,6 +173,10 @@ bool Generator::next(std::vector<U> &factors) {
     while (phase < d.factor_counts.size() && !stopped) {
         if (Clock::now() >= deadline) {
             stopped = 1;
+            return false;
+        }
+        if (Clock::now() >= yield_deadline) {
+            yielded = true;
             return false;
         }
         U f = d.factor_counts[phase], depth = chosen.size(), n = eligible.size();
@@ -256,7 +266,7 @@ void Generator::restore(const Json &j) {
             throw std::runtime_error("Invalid checkpoint prime index");
 }
 namespace {
-// All queued jobs belong to one bounded commit batch. Workers never persist progress.
+// Jobs are coarse chunks in a bounded epoch pipeline. Workers never persist progress.
 class Pool {
     std::mutex mutex;
     std::condition_variable ready, finished;
@@ -360,7 +370,7 @@ struct Task {
     U m;
     int64_t lo, hi;
     bool first_modulus = false, first_roots = false;
-    std::string id;
+    size_t root_offset = 0;
 };
 struct Source {
     const Domain &d;
@@ -406,9 +416,7 @@ struct Source {
         size_t end = std::min(offset + 16, rs.size());
         t.rs.assign(rs.begin() + static_cast<ptrdiff_t>(offset),
                     rs.begin() + static_cast<ptrdiff_t>(end));
-        std::string key = d.fingerprint + ":" + std::to_string(m) + ":" + std::to_string(k) + ":" +
-                          std::to_string(t.hi) + ":" + std::to_string(offset);
-        t.id = sha256(key);
+        t.root_offset = offset;
         offset = end;
         if (offset == rs.size()) {
             offset = 0;
@@ -517,6 +525,14 @@ template <class N> Big big(const N &n) {
 template <class N> Result run_task(const Domain &d, const Task &t, const Options &o) {
     auto start = Clock::now();
     Result out;
+    std::string task_id;
+    auto id = [&]() -> const std::string & {
+        if (task_id.empty())
+            task_id =
+                sha256(d.fingerprint + ":" + std::to_string(t.m) + ":" + std::to_string(t.lo) +
+                       ":" + std::to_string(t.hi) + ":" + std::to_string(t.root_offset));
+        return task_id;
+    };
     auto &st = out.stats;
     st.tasks = 1;
     st.moduli = t.first_modulus;
@@ -536,7 +552,7 @@ template <class N> Result run_task(const Domain &d, const Task &t, const Options
                 ++st.candidates;
                 if (o.trace) {
                     Json row;
-                    row.put("task", t.id);
+                    row.put("task", id());
                     row.put("m", t.m);
                     row.put("r", r);
                     row.put("k", k);
@@ -571,7 +587,7 @@ template <class N> Result run_task(const Domain &d, const Task &t, const Options
                 hit.add_child("coefficients", coefficients(d.a));
                 hit.put("root_database", d.canonical.get<std::string>("root_database"));
                 hit.put("shard", std::to_string(o.shard) + "/" + std::to_string(o.shards));
-                hit.put("task", t.id);
+                hit.put("task", id());
                 hit.put("id", sha256(d.fingerprint + ":" + decimal(x) + ":" + decimal(y) + ":" +
                                      decimal(z)));
                 hit.put("x", decimal(x));
@@ -606,7 +622,8 @@ Json envelope(const Json &payload) {
 Json unwrap(const fs::path &path) {
     Json j = parse(read_file(path));
     Json p = j.get_child("payload");
-    if (p.get<std::string>("schema") != "dio-checkpoint-v1" ||
+    if ((p.get<std::string>("schema") != "dio-checkpoint-v1" &&
+         p.get<std::string>("schema") != "dio-checkpoint-v2") ||
         j.get<std::string>("checksum") != sha256(json(p)))
         throw std::runtime_error(
             "Checkpoint checksum failure; restore a backup or start a new output directory");
@@ -617,6 +634,14 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
     auto setup_start = Clock::now();
     if (o.threads < 1 || o.threads > 1024 || o.shards < 1 || o.shard >= o.shards)
         throw std::runtime_error("Invalid threads or shard");
+    const U queue_chunks = o.queue_chunks ? o.queue_chunks : std::max<U>(2, 2 * o.threads);
+    if (o.chunk_tiles < 1 || o.chunk_tiles > 4096 || queue_chunks < 1 || queue_chunks > 2048 ||
+        o.chunk_tiles > 262144 / queue_chunks || o.checkpoint_tiles < 1 ||
+        o.checkpoint_tiles > 1000000000 || !std::isfinite(o.checkpoint_seconds) ||
+        o.checkpoint_seconds <= 0 || o.checkpoint_seconds > 3600)
+        throw std::runtime_error(
+            "Invalid scheduler limits: chunk tiles 1..4096, queue chunks 1..2048, at most 262144 "
+            "queued logical tiles, checkpoint tiles 1..10^9, checkpoint seconds (0,3600]");
     if (o.arithmetic != "auto" && o.arithmetic != "128" && o.arithmetic != "big")
         throw std::runtime_error("Arithmetic must be auto, 128, or big");
     bool safe = true;
@@ -641,7 +666,11 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
     manifest.put("build_type", BUILD_TYPE);
     manifest.put("setup_seconds", setup_seconds);
     manifest.put("sieve", o.no_sieve ? "disabled" : "64,63,65,11");
-    manifest.put("commit_batch_tiles", "64");
+    manifest.put("scheduler", "chunked-epochs-v1");
+    manifest.put("chunk_tiles", o.chunk_tiles);
+    manifest.put("queue_chunks", queue_chunks);
+    manifest.put("checkpoint_tiles", o.checkpoint_tiles);
+    manifest.put("checkpoint_seconds", o.checkpoint_seconds);
     manifest.put("trace", o.trace ? "true" : "false");
     manifest.put("planning", "Streaming domain; total work and ETA are not enumerated");
     Json exclusions;
@@ -671,6 +700,7 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
     double previous_seconds = 0, previous_generation = 0, previous_persistence = 0;
     bool complete = false;
     std::string result_chain = sha256("");
+    bool recovered_results = false, recovered_trace = false;
     bool continuing = o.resume && fs::exists(checkpoint);
     if (o.resume && !continuing) {
         if (fs::exists(results) && fs::file_size(results) != 0)
@@ -704,32 +734,48 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
         if (!fs::exists(results) || fs::file_size(results) < p.get<U>("result_bytes"))
             throw std::runtime_error("Committed result journal is missing or truncated");
         repair_tail(results);
+        recovered_results = fs::file_size(results) > p.get<U>("result_bytes");
         result_chain = validate_journal(results, p.get<U>("result_bytes"),
                                         p.get<std::string>("result_chain"), d.fingerprint);
         if (o.trace) {
             if (!fs::exists(trace) || fs::file_size(trace) < p.get<U>("trace_bytes"))
                 throw std::runtime_error("Committed trace is missing or truncated");
             repair_tail(trace);
+            recovered_trace = fs::file_size(trace) > p.get<U>("trace_bytes");
         }
     } else if (!o.resume && (fs::exists(checkpoint) || fs::exists(results)))
         throw std::runtime_error(
             "Output already contains a search; pass --resume or choose a new directory");
     manifest.put("setup_seconds", setup_seconds + elapsed(setup_start));
     atomic_write(o.output / "manifest.json", json(manifest));
-    append_durable(results, "");
+    Journal result_journal(results, recovered_results);
+    std::unique_ptr<Journal> trace_journal;
     if (o.trace)
-        append_durable(trace, "");
+        trace_journal = std::make_unique<Journal>(trace, recovered_trace);
     auto start = Clock::now();
     double persistence = 0;
-    U issued_this_run = 0;
+    U issued_this_run = 0, epoch_count = 0, chunks_issued = 0, checkpoint_writes = 0,
+      reordered_epochs = 0;
+    U peak_inflight_chunks = 0;
+    double producer_wait = 0, drain_seconds = 0;
+    struct rusage cpu_begin{};
+    getrusage(RUSAGE_SELF, &cpu_begin);
+    auto observe = [&](std::string_view event, U index) {
+        if (o.observer)
+            o.observer(event, index);
+    };
     if (o.seconds > 0)
         source.gen.deadline = start + std::chrono::duration_cast<Clock::duration>(
                                           std::chrono::duration<double>(std::min(o.seconds, 1e9)));
     Pool pool(o.threads);
     auto persist = [&] {
         auto at = Clock::now();
+        result_journal.sync();
+        if (trace_journal)
+            trace_journal->sync();
+        observe("results_synced", totals.tasks);
         Json p;
-        p.put("schema", "dio-checkpoint-v1");
+        p.put("schema", "dio-checkpoint-v2");
         p.put("generator_version", generator_version);
         p.put("filter_version", filter_version);
         p.put("domain", d.fingerprint);
@@ -745,84 +791,153 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
         p.put("search_seconds", previous_seconds + elapsed(start));
         p.put("generation_seconds", previous_generation + source.generation_seconds);
         p.put("persistence_seconds", previous_persistence + persistence);
+        observe("before_checkpoint", totals.tasks);
         atomic_write(checkpoint, json(envelope(p)));
+        ++checkpoint_writes;
         persistence += elapsed(at);
+        observe("checkpoint_replaced", totals.tasks);
     };
     if (!continuing)
         persist();
     const bool use_native = o.arithmetic == "128" || (o.arithmetic == "auto" && safe);
+    // The persisted cursor remains the previous epoch's frontier until every issued
+    // chunk is received. Futures bound both outstanding work and result buffers.
     while (!complete && !stopped) {
         if ((o.seconds > 0 && elapsed(start) >= o.seconds) ||
             (o.max_tasks && issued_this_run >= o.max_tasks))
             break;
-        // Fixed storage keeps worker references valid while the producer streams tasks.
-        std::vector<Task> tasks(64);
-        std::vector<Result> outputs(64);
-        std::vector<std::exception_ptr> errors(64);
-        std::array<size_t, 64> completion{};
-        std::atomic<size_t> completed_count{0};
-        size_t count = 0;
+        const auto epoch_start = Clock::now();
+        source.gen.yield_deadline =
+            epoch_start + std::chrono::duration_cast<Clock::duration>(
+                              std::chrono::duration<double>(o.checkpoint_seconds));
+        struct ChunkResult {
+            Result output;
+            U order = 0;
+        };
+        std::deque<std::future<ChunkResult>> pending;
+        std::atomic<U> completion_order{0};
+        U issued_epoch = 0, received = 0;
+        bool found = false, reordered = false;
+        auto receive = [&] {
+            auto wait_start = Clock::now();
+            ChunkResult chunk = pending.front().get();
+            pending.pop_front();
+            producer_wait += elapsed(wait_start);
+            reordered = reordered || chunk.order != received++;
+            auto at = Clock::now();
+            totals.add(chunk.output.stats);
+            result_journal.append(chunk.output.hits);
+            result_chain = chain_records(result_chain, chunk.output.hits);
+            if (trace_journal)
+                trace_journal->append(chunk.output.trace);
+            found = found || chunk.output.stats.hits > 0;
+            persistence += elapsed(at);
+            observe("chunk_received", totals.tasks);
+        };
         try {
-            for (size_t j = 0; j < 64 && !stopped; ++j) {
-                if ((o.seconds > 0 && elapsed(start) >= o.seconds) ||
+            while (!stopped && !complete && issued_epoch < o.checkpoint_tiles) {
+                while (!pending.empty() && pending.front().wait_for(std::chrono::seconds(0)) ==
+                                               std::future_status::ready)
+                    receive();
+                if (found && o.stop_on_hit)
+                    break;
+                if (pending.size() >= queue_chunks)
+                    receive();
+                if ((found && o.stop_on_hit) || Clock::now() >= source.gen.yield_deadline ||
+                    (o.seconds > 0 && elapsed(start) >= o.seconds) ||
                     (o.max_tasks && issued_this_run >= o.max_tasks))
                     break;
-                if (!source.next(tasks[j])) {
-                    if (!stopped)
-                        complete = true;
-                    break;
-                }
-                pool.submit([&, j] {
-                    try {
-                        outputs[j] = use_native ? run_task<__int128_t>(d, tasks[j], o)
-                                                : run_task<Big>(d, tasks[j], o);
-                    } catch (...) {
-                        errors[j] = std::current_exception();
+                std::vector<Task> tasks;
+                tasks.reserve(static_cast<size_t>(o.chunk_tiles));
+                U first = issued_this_run;
+                for (U n = 0; n < o.chunk_tiles && !stopped && issued_epoch < o.checkpoint_tiles;
+                     ++n) {
+                    if (Clock::now() >= source.gen.yield_deadline ||
+                        (o.seconds > 0 && elapsed(start) >= o.seconds) ||
+                        (o.max_tasks && issued_this_run >= o.max_tasks))
+                        break;
+                    Task t;
+                    if (!source.next(t)) {
+                        if (!stopped && !source.gen.yielded)
+                            complete = true;
+                        break;
                     }
-                    completion[j] = completed_count.fetch_add(1);
-                });
-                ++count;
-                ++issued_this_run;
+                    tasks.push_back(std::move(t));
+                    ++issued_this_run;
+                    ++issued_epoch;
+                }
+                if (tasks.empty())
+                    break;
+                auto job = std::make_shared<std::packaged_task<ChunkResult()>>(
+                    [&, tasks = std::move(tasks), first] {
+                        observe("chunk_started", first);
+                        ChunkResult chunk;
+                        for (size_t i = 0; i < tasks.size(); ++i) {
+                            Result tile = use_native ? run_task<__int128_t>(d, tasks[i], o)
+                                                     : run_task<Big>(d, tasks[i], o);
+                            chunk.output.stats.add(tile.stats);
+                            chunk.output.hits += tile.hits;
+                            chunk.output.trace += tile.trace;
+                            observe("tile_completed", first + i + 1);
+                        }
+                        chunk.order = completion_order.fetch_add(1);
+                        observe("chunk_completed", first);
+                        return chunk;
+                    });
+                pending.push_back(job->get_future());
+                pool.submit([job] { (*job)(); });
+                ++chunks_issued;
+                peak_inflight_chunks = std::max<U>(peak_inflight_chunks, pending.size());
             }
+            auto drain_start = Clock::now();
+            while (!pending.empty())
+                receive();
+            pool.wait();
+            drain_seconds += elapsed(drain_start);
         } catch (...) {
             pool.wait();
             throw;
         }
-        pool.wait();
-        outputs.resize(count);
-        bool reordered = false;
-        for (size_t j = 0; j < count; ++j) {
-            if (errors[j])
-                std::rethrow_exception(errors[j]);
-            reordered = reordered || completion[j] != j;
-        }
-        if (reordered)
+        if (reordered) {
             ++totals.out_of_order_batches;
-        auto at = Clock::now();
-        std::string hits, coverage;
-        bool found = false;
-        for (const auto &out : outputs) {
-            totals.add(out.stats);
-            hits += out.hits;
-            coverage += out.trace;
-            found = found || out.stats.hits > 0;
+            ++reordered_epochs;
         }
-        append_durable(results, hits);
-        result_chain = chain_records(result_chain, hits);
-        if (o.trace)
-            append_durable(trace, coverage);
-        persistence += elapsed(at);
+        ++epoch_count;
+        observe("epoch_drained", totals.tasks);
         persist();
         if (found && o.stop_on_hit)
             break;
     }
-    persist();
+    // Includes no-work resumes/migrations; ordinary epochs have already committed.
+    if (continuing && epoch_count == 0)
+        persist();
     Json report = manifest;
     report.put("complete", complete ? "true" : "false");
     report.add_child("counters", totals.save());
     report.put("search_seconds", previous_seconds + elapsed(start));
     report.put("generation_crt_seconds", previous_generation + source.generation_seconds);
     report.put("persistence_seconds", previous_persistence + persistence);
+    Json metrics;
+    metrics.put("epochs", epoch_count);
+    metrics.put("chunks", chunks_issued);
+    metrics.put("checkpoint_writes", checkpoint_writes);
+    metrics.put("result_append_calls", result_journal.append_calls);
+    metrics.put("result_fsync_calls", result_journal.sync_calls);
+    metrics.put("trace_append_calls", trace_journal ? trace_journal->append_calls : 0);
+    metrics.put("trace_fsync_calls", trace_journal ? trace_journal->sync_calls : 0);
+    metrics.put("out_of_order_epochs", reordered_epochs);
+    metrics.put("peak_inflight_chunks", peak_inflight_chunks);
+    metrics.put("producer_wait_seconds", producer_wait);
+    metrics.put("epoch_drain_seconds", drain_seconds);
+    report.add_child("invocation_metrics", metrics);
+    struct rusage cpu_end{};
+    getrusage(RUSAGE_SELF, &cpu_end);
+    auto cpu = [](const rusage &r) {
+        return static_cast<double>(r.ru_utime.tv_sec + r.ru_stime.tv_sec) +
+               static_cast<double>(r.ru_utime.tv_usec + r.ru_stime.tv_usec) / 1e6;
+    };
+    report.put("invocation_cpu_seconds", cpu(cpu_end) - cpu(cpu_begin));
+    report.put("invocation_mean_busy_cpus", (cpu(cpu_end) - cpu(cpu_begin)) / elapsed(start));
     report.put("result_checksum_algorithm", "sha256-record-chain-v1");
     report.put("result_checksum", result_chain);
     report.put("result_bytes", fs::file_size(results));

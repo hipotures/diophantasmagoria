@@ -16,6 +16,21 @@ std::string file_hash(const fs::path &p);
 std::string read_file(const fs::path &p);
 void atomic_write(const fs::path &p, const std::string &data);
 void append_durable(const fs::path &p, const std::string &data);
+// Main-thread journal: stream records now, sync dirty bytes before a checkpoint.
+class Journal {
+    fs::path path;
+    int fd = -1;
+    bool dirty = false;
+    void open_file();
+
+  public:
+    U append_calls = 0, sync_calls = 0;
+    explicit Journal(const fs::path &p, bool recovered_uncommitted = false);
+    ~Journal();
+    Journal(const Journal &) = delete;
+    void append(const std::string &data);
+    void sync();
+};
 void repair_tail(const fs::path &p);
 Json array(const std::vector<U> &v);
 std::vector<U> numbers(const Json &a);

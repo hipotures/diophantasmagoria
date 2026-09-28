@@ -148,6 +148,8 @@ void atomic_write(const fs::path &p, const std::string &data) {
     sync_dir(p.parent_path().empty() ? fs::path(".") : p.parent_path());
 }
 void append_durable(const fs::path &p, const std::string &data) {
+    if (data.empty())
+        return;
     int fd = open(p.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0644);
     if (fd < 0)
         throw std::runtime_error("Cannot append: " + p.string());
@@ -160,6 +162,40 @@ void append_durable(const fs::path &p, const std::string &data) {
         throw;
     }
     close(fd);
+}
+Journal::Journal(const fs::path &p, bool recovered_uncommitted)
+    : path(p), dirty(recovered_uncommitted) {
+    // Creation is separate from appending. A new empty journal is made durable once.
+    if (!fs::exists(path))
+        atomic_write(path, "");
+}
+void Journal::open_file() {
+    if (fd < 0) {
+        fd = open(path.c_str(), O_WRONLY | O_APPEND);
+        if (fd < 0)
+            throw std::runtime_error("Cannot open journal: " + path.string());
+    }
+}
+Journal::~Journal() {
+    if (fd >= 0)
+        close(fd);
+}
+void Journal::append(const std::string &data) {
+    if (data.empty())
+        return;
+    open_file();
+    write_all(fd, data);
+    dirty = true;
+    ++append_calls;
+}
+void Journal::sync() {
+    if (!dirty)
+        return;
+    open_file();
+    if (fsync(fd))
+        throw std::runtime_error("Journal fsync failed: " + path.string());
+    dirty = false;
+    ++sync_calls;
 }
 void repair_tail(const fs::path &p) {
     if (!fs::exists(p))

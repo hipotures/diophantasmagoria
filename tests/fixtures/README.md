@@ -9,3 +9,12 @@ The checkpoint was generated with `configs/smoke.json`, that database,
 Tests reuse the database without modification and require rejection of the old
 checkpoint before reading its cursor or any result journal. The generator's new
 prime list must never reinterpret this saved v1 cursor.
+
+## Issue #2 scheduler migration fixture
+
+`issue2-run/` was generated with the unchanged issue #2 application source at
+`8e7613cd54772dc22c83524735a908dbe89c7d86`, using its included config/cache and
+`--max-tasks 1`. The original v1 checksum and witness journal are preserved.
+`tests/epochs.py` resumes it with multiple workers and different scheduler settings,
+checks the unchanged domain, complete oracle hit set and merge checksum, and
+requires a v2 checkpoint.

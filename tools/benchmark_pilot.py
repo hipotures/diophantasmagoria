@@ -12,16 +12,20 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def main():
+def main(production=False):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--exe", type=Path, default=Path("build/diophantasmagoria"))
-    parser.add_argument("--config", type=Path, default=ROOT / "configs/pilot-g1.json")
+    parser.add_argument("--config", type=Path, default=ROOT / ("configs/campaign-g1.json" if production else "configs/pilot-g1.json"))
     parser.add_argument("--db", type=Path, help="Reuse an existing complete cache without regenerating it")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--threads", default="1,2,4,8,16,24,32")
     parser.add_argument("--repeats", type=int, default=3)
-    parser.add_argument("--max-tasks", type=int, default=20000)
+    parser.add_argument("--max-tasks", type=int, default=5000000 if production else 20000)
     parser.add_argument("--shard", default="0/3")
+    parser.add_argument("--chunk-tiles", type=int, default=256)
+    parser.add_argument("--queue-chunks", type=int, default=0)
+    parser.add_argument("--checkpoint-tiles", type=int, default=262144)
+    parser.add_argument("--checkpoint-seconds", type=float, default=2)
     args = parser.parse_args()
     if args.repeats < 1 or args.max_tasks < 1:
         parser.error("Positive repeats and task budget required")
@@ -47,7 +51,9 @@ def main():
     with database.open() as stream:
         database_header = json.loads(stream.readline())
     common = [str(args.exe), "search", "--config", str(config_path), "--db", str(database),
-              "--shard", args.shard]
+              "--shard", args.shard, "--chunk-tiles", str(args.chunk_tiles),
+              "--queue-chunks", str(args.queue_chunks), "--checkpoint-tiles", str(args.checkpoint_tiles),
+              "--checkpoint-seconds", str(args.checkpoint_seconds)]
     # A separately bounded trace demonstrates where the generator starts after pruning.
     sample_dir = args.out / "first-tile"
     sample = json.loads(subprocess.check_output(common + ["--out", str(sample_dir), "--max-tasks", "1",
@@ -78,8 +84,10 @@ def main():
             report["process_wall_seconds"] = wall
             report["candidates_per_search_second"] = int(report["counters"]["candidates"]) / float(report["search_seconds"])
             report["final_cursor_sha256"] = hashlib.sha256(json.dumps(cursor, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+            report["tasks_per_search_second"] = int(report["counters"]["tasks"]) / float(report["search_seconds"])
             report["repeat"] = str(repeat)
             measurements.append(report)
+            (args.out / "measurements.json").write_text(json.dumps(measurements, indent=2) + "\n")
             print(f'workers={count} repeat={repeat} setup={float(report["setup_seconds"]):.3f}s '
                   f'search={float(report["search_seconds"]):.3f}s wall={wall:.3f}s '
                   f'candidates={report["counters"]["candidates"]} survivors={report["counters"]["survivors"]}', flush=True)
