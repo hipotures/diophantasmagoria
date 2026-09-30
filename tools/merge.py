@@ -45,6 +45,9 @@ def merge(directories):
                     or row["root_database"] != manifest["root_database"]):
                 raise ValueError("Witness provenance does not match manifest")
             definition = manifest["domain_definition"]
+            expected_backend = definition.get("backend", "yz-sum")
+            if row.get("backend", "yz-sum") != expected_backend:
+                raise ValueError("Witness backend does not match manifest")
             m, k = int(row["m"]), int(row["k"])
             factors = list(map(int, row["factors"]))
             explicit = definition["moduli"]

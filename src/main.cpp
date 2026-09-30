@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
         std::signal(SIGINT, signal_handler);
         std::signal(SIGTERM, signal_handler);
         if (argc < 2 || std::string(argv[1]) == "--help") {
-            std::cout << "diophantasmagoria roots --polynomial g1|g2|regression|synthetic "
+            std::cout << "diophantasmagoria roots --polynomial g1|g2|regression|synthetic|symmetric "
                          "[--coefficients E,C,B,A] (--limit N | --primes p,q,...) --out FILE\n"
                       << "diophantasmagoria search --config FILE --db FILE --out DIR [--threads N] "
                          "[--shard I/N] [--arithmetic auto|128|big] [--resume] [--dry-run] "

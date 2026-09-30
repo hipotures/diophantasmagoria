@@ -16,6 +16,8 @@ POLYNOMIALS = {
 
 
 def coefficients(config):
+    if "coefficients" not in config and config.get("polynomial") == "symmetric":
+        return [1, 4, 0, 26]
     return list(map(int, config["coefficients"])) if "coefficients" in config else POLYNOMIALS[config["polynomial"]]
 
 
@@ -32,6 +34,11 @@ def is_prime(p):
 
 
 def verify_record(row):
+    if row.get("schema") == "dio-symmetric-witness-v1":
+        from symmetric import verify_record as verify_symmetric
+        return verify_symmetric(row)
+    if row.get("backend", "yz-sum") != "yz-sum":
+        raise ValueError("Legacy witness/backend mismatch")
     if row["schema"] != "dio-witness-v1":
         raise ValueError("Unsupported witness schema")
     a = coefficients(row)
@@ -64,6 +71,9 @@ def coordinate_box(a, bound):
 
 def structured(config):
     """Tiny exact modulus/root/k domain, not a coordinate-height search."""
+    if config.get("backend") == "symmetric-cubic":
+        from symmetric import structured as symmetric_structured
+        return symmetric_structured(config)
     a = coefficients(config)
     minimum, maximum = int(config["m_min"]), int(config["m_max"])
     if maximum > 100000:

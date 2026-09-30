@@ -23,6 +23,8 @@ std::string decimal(const Big &n) {
     return n.convert_to<std::string>();
 }
 Poly polynomial(const std::string &name) {
+    if (name == "symmetric")
+        return {1, 4, 0, 26};
     if (name == "g1")
         return {-1, 3, 1, 1};
     if (name == "g2")
@@ -179,8 +181,7 @@ std::vector<U> roots(const Poly &a, U p) {
     std::vector<U> out;
     if (p <= 97 || f.empty()) {
         if (f.empty() && p > 1000000)
-            throw std::runtime_error(
-                "Zero polynomial modulo large prime: more than 1000000 roots unsupported");
+            throw std::runtime_error("Zero polynomial modulo large prime: more than 1000000 roots unsupported");
         for (U x = 0; x < p; ++x) {
             U v = 0;
             for (auto i = f.rbegin(); i != f.rend(); ++i)

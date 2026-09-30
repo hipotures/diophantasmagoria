@@ -39,3 +39,8 @@ add_test(NAME integration COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test
 add_executable(fault_search tests/fault_search.cpp)
 target_link_libraries(fault_search PRIVATE core)
 add_test(NAME epochs COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/epochs.py $<TARGET_FILE:diophantasmagoria> $<TARGET_FILE:fault_search>)
+
+add_executable(symmetric_unit_tests tests/symmetric_unit.cpp)
+target_link_libraries(symmetric_unit_tests PRIVATE core)
+add_test(NAME symmetric_math COMMAND symmetric_unit_tests)
+add_test(NAME symmetric_backend COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/symmetric_backend.py $<TARGET_FILE:diophantasmagoria> $<TARGET_FILE:fault_search>)

@@ -1,4 +1,5 @@
 #include "search.hpp"
+#include "equation.hpp"
 #include <algorithm>
 #include <atomic>
 #include <boost/version.hpp>
@@ -45,7 +46,13 @@ U product(const std::vector<U> &factors) {
 Domain domain(const Json &config, const Database &db) {
     Domain d;
     d.a = get_poly(config);
-    d.exclude_even = excludes_even_square_free(d.a);
+    const std::string backend = config.get<std::string>("backend", "yz-sum");
+    if (backend != "yz-sum" && backend != "symmetric-cubic")
+        throw std::runtime_error("Unknown backend: " + backend);
+    d.symmetric = backend == "symmetric-cubic";
+    if (d.symmetric && !symmetric_coefficients(d.a))
+        throw std::runtime_error("Symmetric backend requires root coefficients [C,4,0,26]");
+    d.exclude_even = !d.symmetric && excludes_even_square_free(d.a);
     if (d.a != db.a)
         throw std::runtime_error("Database polynomial does not match configuration");
     d.m_min = bounded(config, "m_min", 1);
@@ -139,6 +146,9 @@ Domain domain(const Json &config, const Database &db) {
     }
     c.add_child("k_ranges", ranges);
     c.put("signs", "+1,-1");
+    // Preserve the old fingerprints verbatim for all unchanged legacy domains.
+    if (d.symmetric)
+        c.put("backend", symmetric_backend);
     d.fingerprint = sha256(json(c));
     return d;
 }
@@ -523,7 +533,7 @@ struct Result {
 template <class N> Big big(const N &n) {
     return Big(n);
 }
-template <class N> Result run_task(const Domain &d, const Task &t, const Options &o) {
+template <class N, bool Symmetric = false> Result run_task(const Domain &d, const Task &t, const Options &o) {
     auto start = Clock::now();
     Result out;
     std::string task_id;
@@ -547,7 +557,7 @@ template <class N> Result run_task(const Domain &d, const Task &t, const Options
         a[i] = d.a[i].convert_to<N>();
     const N m = t.m;
     for (U r : t.rs) {
-        Differences<N> diff(a, t.m, r, t.lo);
+        CandidateSequence<N, Symmetric> diff(a, t.m, r, t.lo);
         for (int64_t k = t.lo; k <= t.hi; ++k) {
             for (int sign : {1, -1}) {
                 ++st.candidates;
@@ -560,7 +570,7 @@ template <class N> Result run_task(const Domain &d, const Task &t, const Options
                     row.put("sign", sign);
                     out.trace += json(row);
                 }
-                N delta = m * m - 4 * sign * diff.h;
+                N delta = diff.delta(sign);
                 if (delta < 0)
                     continue;
                 ++st.nonnegative;
@@ -575,15 +585,31 @@ template <class N> Result run_task(const Domain &d, const Task &t, const Options
                 if (!square)
                     continue;
                 N dd = sign * m;
-                if ((dd - s) % 2 != 0)
-                    continue;
-                Big x = Big(r) + Big(k) * t.m, y = (big(dd) + big(s)) / 2,
+                Big coordinate = Big(r) + Big(k) * t.m;
+                Big x, y, z, residual;
+                if constexpr (Symmetric) {
+                    if ((coordinate - big(s)) % 2 != 0)
+                        continue;
+                    x = (coordinate + big(s)) / 2;
+                    y = (coordinate - big(s)) / 2;
+                    z = big(dd) - 3*coordinate;
+                    residual = symmetric_residual(x, y, z, d.a[0]);
+                } else {
+                    if ((dd - s) % 2 != 0)
+                        continue;
+                    x = coordinate;
+                    y = (big(dd) + big(s)) / 2;
                     z = (big(dd) - big(s)) / 2;
-                Big residual = y * z * (y + z) - eval(d.a, x);
+                    residual = y*z*(y+z) - eval(d.a, x);
+                }
                 if (residual != 0)
                     throw std::runtime_error("Independent witness verification failed");
                 Json hit;
-                hit.put("schema", "dio-witness-v1");
+                hit.put("schema", Symmetric ? "dio-symmetric-witness-v1" : "dio-witness-v1");
+                if constexpr (Symmetric) {
+                    hit.put("backend", symmetric_backend);
+                    hit.put("a", decimal(coordinate));
+                }
                 hit.put("domain", d.fingerprint);
                 hit.add_child("coefficients", coefficients(d.a));
                 hit.put("root_database", d.canonical.get<std::string>("root_database"));
@@ -649,7 +675,8 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
         throw std::runtime_error("Arithmetic must be auto, 128, or big");
     bool safe = true;
     for (auto [lo, hi] : d.ranges)
-        safe = safe && native_safe(d.a, d.m_max, lo, hi);
+        safe = safe && (d.symmetric ? symmetric_native_safe(d.a, d.m_max, lo, hi)
+                                   : native_safe(d.a, d.m_max, lo, hi));
     if (o.arithmetic == "128" && !safe)
         throw std::runtime_error(
             "Unsafe forced native arithmetic for declared domain; use auto or big");
@@ -903,8 +930,13 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
                         observe("chunk_started", first);
                         ChunkResult chunk;
                         for (size_t i = 0; i < tasks.size(); ++i) {
-                            Result tile = use_native ? run_task<__int128_t>(d, tasks[i], o)
-                                                     : run_task<Big>(d, tasks[i], o);
+                            Result tile;
+                            if (d.symmetric)
+                                tile = use_native ? run_task<__int128_t, true>(d, tasks[i], o)
+                                                  : run_task<Big, true>(d, tasks[i], o);
+                            else
+                                tile = use_native ? run_task<__int128_t>(d, tasks[i], o)
+                                                  : run_task<Big>(d, tasks[i], o);
                             chunk.output.stats.add(tile.stats);
                             chunk.output.hits += tile.hits;
                             chunk.output.trace += tile.trace;
