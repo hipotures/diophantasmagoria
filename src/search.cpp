@@ -13,11 +13,19 @@
 #include <iostream>
 #include <sys/resource.h>
 #include <thread>
+#include <unistd.h>
 namespace dio {
 namespace {
 using Clock = std::chrono::steady_clock;
 constexpr auto generator_version = "lexicographic-prefix2-v2";
 constexpr auto filter_version = "even-square-free-g1-g2-v1";
+void bell() {
+    for (int i = 0; i < 3; ++i) {
+        std::cerr.put('\a').flush();
+        if (i < 2 && ::isatty(STDERR_FILENO))
+            std::this_thread::sleep_for(std::chrono::milliseconds(400));
+    }
+}
 double elapsed(Clock::time_point a) {
     return std::chrono::duration<double>(Clock::now() - a).count();
 }
@@ -855,6 +863,7 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
     };
     if (!continuing)
         persist();
+    bell();
     progress(continuing ? "resumed" : "started", true);
     const bool use_native = o.arithmetic == "128" || (o.arithmetic == "auto" && safe);
     // The persisted cursor remains the previous epoch's frontier until every issued
@@ -885,6 +894,8 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
             totals.add(chunk.output.stats);
             result_journal.append(chunk.output.hits);
             result_chain = chain_records(result_chain, chunk.output.hits);
+            for (U i = 0; i < chunk.output.stats.hits; ++i)
+                bell();
             if (trace_journal)
                 trace_journal->append(chunk.output.trace);
             found = found || chunk.output.stats.hits > 0;

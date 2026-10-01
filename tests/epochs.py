@@ -35,8 +35,13 @@ def main():
     _, resumed = t.search("progress", config, db, "--resume", "--max-tasks", 1)
     assert "run_tiles=1/1 (100.0% of run tile budget)" in resumed.stderr
     assert "committed_tiles=3" in resumed.stderr
-    _, silent = t.search("quiet", config, db, "--progress-seconds", 0)
-    assert silent.stderr == "" and json.loads(silent.stdout)["complete"] == "true"
+    quiet, silent = t.search("quiet", config, db, "--progress-seconds", 0)
+    hit_count = len(list(t.records(quiet / "results.jsonl")))
+    assert hit_count > 0
+    assert json.loads(silent.stdout)["complete"] == "true"
+    assert silent.stderr == "\a" * (3 * (1 + hit_count))
+    _, quiet_resume = t.search("quiet", config, db, "--resume", "--progress-seconds", 0)
+    assert quiet_resume.stderr == "\a" * 3
     _, timed = t.search("timed-progress", config, db, "--seconds", 60)
     assert "time_budget=" in timed.stderr and "shard=complete" in timed.stderr
     reference, _ = t.search("reference", config, db, "--trace")
