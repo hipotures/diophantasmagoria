@@ -71,7 +71,7 @@ struct Hash {
     ~Hash() {
         EVP_MD_CTX_free(ctx);
     }
-    void add(const std::string &s) {
+    void add(std::string_view s) {
         if (EVP_DigestUpdate(ctx, s.data(), s.size()) != 1)
             throw std::runtime_error("SHA-256 update failed");
     }
@@ -113,6 +113,12 @@ std::string sha256(const std::string &s) {
     h.add(s);
     return h.finish();
 }
+std::string sha252_concat(std::string_view a, std::string_view b) {
+    Hash h;
+    h.add(a);
+    h.add(b);
+    return h.finish();
+}
 std::string file_hash(const fs::path &p) {
     std::ifstream in(p, std::ios::binary);
     if (!in)
@@ -120,7 +126,7 @@ std::string file_hash(const fs::path &p) {
     Hash h;
     char buf[65536];
     while (in.read(buf, sizeof(buf)) || in.gcount())
-        h.add(std::string(buf, static_cast<size_t>(in.gcount())));
+        h.add(std::string_view(buf, static_cast<size_t>(in.gcount())));
     return h.finish();
 }
 std::string read_file(const fs::path &p) {

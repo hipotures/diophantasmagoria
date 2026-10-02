@@ -36,6 +36,27 @@ int main() {
                     "New records must be durable at commit");
         }
         fs::remove(journal_path);
+        // primes(): edge cases and agreement with independent trial division.
+        require(primes(0).empty() && primes(1).empty(), "primes below 2 must be empty");
+        require(primes(2) == std::vector<uint32_t>{2}, "primes(2)");
+        require(primes(3) == std::vector<uint32_t>{2, 3}, "primes(3)");
+        require(primes(4) == std::vector<uint32_t>{2, 3}, "primes(4)");
+        require(primes(5) == std::vector<uint32_t>{2, 3, 5}, "primes(5)");
+        require(primes(10) == std::vector<uint32_t>{2, 3, 5, 7}, "primes(10)");
+        for (uint32_t limit : {30U, 97U, 100U, 200U, 1000U, 5000U}) {
+            std::vector<uint32_t> want;
+            for (uint32_t n = 2; n <= limit; ++n) {
+                bool prime = true;
+                for (uint32_t d = 2; d * d <= n; ++d)
+                    if (n % d == 0) {
+                        prime = false;
+                        break;
+                    }
+                if (prime)
+                    want.push_back(n);
+            }
+            require(primes(limit) == want, "Prime sieve disagrees with trial division");
+        }
         std::vector<Poly> polys = {polynomial("g1"),
                                    polynomial("g2"),
                                    polynomial("regression"),

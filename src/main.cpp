@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
     try {
         std::signal(SIGINT, signal_handler);
         std::signal(SIGTERM, signal_handler);
-        if (argc < 2 || std::string(argv[1]) == "--help") {
+        if (argc < 2 || std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h") {
             std::cout << "diophantasmagoria roots --polynomial g1|g2|regression|synthetic|symmetric "
                          "[--coefficients E,C,B,A] (--limit N | --primes p,q,...) --out FILE\n"
                       << "diophantasmagoria search --config FILE --db FILE --out DIR [--threads N] "
@@ -92,11 +92,11 @@ int main(int argc, char **argv) {
                 size_t i = 0;
                 while (std::getline(in, part, ',')) {
                     if (i >= 4)
-                        throw std::runtime_error("Four coefficients required");
+                        throw std::runtime_error("Too many coefficients; exactly four are required");
                     a[i++] = dio::integer(part);
                 }
                 if (i != 4)
-                    throw std::runtime_error("Four coefficients required");
+                    throw std::runtime_error("Exactly four coefficients are required");
             } else
                 a = dio::polynomial(required("--polynomial"));
             if (opts.contains("--limit") == opts.contains("--primes"))

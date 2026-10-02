@@ -347,7 +347,7 @@ std::string chain_records(std::string chain, const std::string &records) {
         size_t end = records.find('\n', begin);
         if (end == std::string::npos)
             throw std::runtime_error("Incomplete internal result record");
-        chain = sha256(chain + records.substr(begin, end - begin + 1));
+        chain = sha252_concat(chain, std::string_view(records).substr(begin, end - begin + 1));
         begin = end + 1;
     }
     return chain;

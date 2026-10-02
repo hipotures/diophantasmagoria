@@ -1,7 +1,10 @@
 #pragma once
 #include <array>
 #include <boost/multiprecision/cpp_int.hpp>
+#include <boost/multiprecision/integer.hpp>
+#include <cassert>
 #include <cstdint>
+#include <type_traits>
 #include <string>
 #include <vector>
 namespace dio {
@@ -24,13 +27,18 @@ template <class N> N square_root(const N &n) {
         throw std::runtime_error("Square root of a negative integer");
     if (n < 2)
         return n;
-    N v = n, x = 1;
-    unsigned bits = 0;
-    while (v != 0) {
-        v >>= 1;
-        ++bits;
+    unsigned bits;
+    if constexpr (std::is_same_v<N, Big>)
+        bits = static_cast<unsigned>(msb(n)) + 1;
+    else {
+        N v = n;
+        bits = 0;
+        while (v != 0) {
+            v >>= 1;
+            ++bits;
+        }
     }
-    x <<= (bits + 1) / 2;
+    N x = N(1) << ((bits + 1) / 2);
     for (;;) {
         N y = (x + n / x) / 2;
         if (y >= x)
@@ -43,9 +51,15 @@ template <class N> N evaluate(const std::array<N, 4> &a, const N &x) {
 }
 template <class N> struct Differences {
     N h, first, second, third;
+    struct from_samples {};
+    Differences(from_samples, const std::array<N, 4> &s)
+        : h(s[0]), first(s[1] - s[0]), second(s[2] - 2 * s[1] + s[0]),
+          third(s[3] - 3 * s[2] + 3 * s[1] - s[0]) {}
     Differences(const std::array<N, 4> &a, U modulus, U root, int64_t k) {
         const N m = modulus, r = root;
-        const N b0 = evaluate(a, r) / m;
+        const N g = evaluate(a, r);
+        assert(g % m == 0); // m divides G(r) because r is a CRT root modulo m
+        const N b0 = g / m;
         const N b1 = 3 * a[3] * r * r + 2 * a[2] * r + a[1];
         const N b2 = m * (3 * a[3] * r + a[2]);
         const N b3 = a[3] * m * m;

@@ -27,18 +27,6 @@ inline bool symmetric_native_safe(const Poly &a, U m, int64_t lo, int64_t hi) {
     return bound < (Big(1) << 127);
 }
 
-template <class N> struct CubicSequence {
-    N value, first, second, third;
-    explicit CubicSequence(const std::array<N, 4> &h)
-        : value(h[0]), first(h[1]-h[0]), second(h[2]-2*h[1]+h[0]),
-          third(h[3]-3*h[2]+3*h[1]-h[0]) {}
-    void next() {
-        value += first;
-        first += second;
-        second += third;
-    }
-};
-
 template <class N, bool Symmetric> struct CandidateSequence;
 template <class N> struct CandidateSequence<N, false> {
     Differences<N> quotient;
@@ -50,7 +38,7 @@ template <class N> struct CandidateSequence<N, false> {
 };
 
 template <class N> struct CandidateSequence<N, true> {
-    CubicSequence<N> positive, negative;
+    Differences<N> positive, negative;
     static std::array<std::array<N, 4>, 2> samples(const std::array<N, 4> &a,
                                                   U modulus, U root, int64_t k) {
         const N m = modulus;
@@ -70,10 +58,11 @@ template <class N> struct CandidateSequence<N, true> {
         return values;
     }
     explicit CandidateSequence(const std::array<std::array<N, 4>, 2> &h)
-        : positive(h[0]), negative(h[1]) {}
+        : positive(typename Differences<N>::from_samples{}, h[0]),
+          negative(typename Differences<N>::from_samples{}, h[1]) {}
     CandidateSequence(const std::array<N, 4> &a, U m, U r, int64_t k)
         : CandidateSequence(samples(a, m, r, k)) {}
-    N delta(int sign) const { return sign == 1 ? positive.value : negative.value; }
+    N delta(int sign) const { return sign == 1 ? positive.h : negative.h; }
     void next() { positive.next(); negative.next(); }
 };
 } // namespace dio
