@@ -217,6 +217,81 @@ std::vector<U> roots(const Poly &a, U p) {
             throw std::runtime_error("Invalid finite-field root");
     return out;
 }
+U prime_power(U p, U exponent) {
+    if (p < 2 || exponent < 1 || exponent > 62)
+        throw std::runtime_error("Prime-power exponent must be in [1,62]");
+    U q = 1;
+    for (U j = 0; j < exponent; ++j) {
+        if (q > U(INT64_MAX) / p)
+            throw std::runtime_error("Prime power exceeds signed 64-bit domain");
+        q *= p;
+    }
+    return q;
+}
+U inverse_mod(U a, U modulus) {
+    if (modulus < 2 || modulus > U(INT64_MAX))
+        throw std::runtime_error("Invalid inverse modulus");
+    // Signed 128-bit Euclid covers intermediates for signed 64-bit moduli.
+    __int128_t t = 0, next = 1;
+    U r = modulus, remnant = a % modulus;
+    while (remnant) {
+        U quotient = r / remnant;
+        __int128_t value = t - __int128_t(quotient) * next;
+        t = next;
+        next = value;
+        U value_r = r % remnant;
+        r = remnant;
+        remnant = value_r;
+    }
+    if (r != 1)
+        throw std::runtime_error("CRT factors are not coprime");
+    if (t < 0) t += modulus;
+    return static_cast<U>(t);
+}
+std::vector<U> hensel_roots(const Poly &a, U p, U exponent,
+                           const std::vector<U> &prime_roots) {
+    const U target = prime_power(p, exponent);
+    if (p > 100000000)
+        throw std::runtime_error("Root prime exceeds supported range");
+    std::vector<U> current = prime_roots;
+    if (!std::is_sorted(current.begin(), current.end()) ||
+        std::adjacent_find(current.begin(), current.end()) != current.end())
+        throw std::runtime_error("Invalid Hensel seed ordering");
+    for (U r : current)
+        if (r >= p || eval(a, Big(r)) % p != 0)
+            throw std::runtime_error("Invalid Hensel seed root");
+    auto residue = [p](Big value) {
+        value %= p;
+        if (value < 0) value += p;
+        return value.convert_to<U>();
+    };
+    U q = p;
+    while (q < target) {
+        if (stopped) throw std::runtime_error("Hensel lifting interrupted");
+        std::vector<U> next;
+        for (U r : current) {
+            const Big value = eval(a, Big(r));
+            if (value % q != 0) throw std::runtime_error("Invalid intermediate Hensel root");
+            U quotient = residue(Big(value / q));
+            U derivative = residue(Big((3*a[3]*r + 2*a[2])*r + a[1]));
+            if (derivative) {
+                if (next.size() == 1000000)
+                    throw std::runtime_error("Hensel exceeds 1000000 roots; reduce exponents");
+                U digit = mul((p - quotient) % p, inverse_mod(derivative, p), p);
+                next.push_back(r + q*digit);
+            } else if (quotient == 0) {
+                if (p > 1000000 - next.size())
+                    throw std::runtime_error("Hensel exceeds 1000000 roots; reduce exponents");
+                for (U digit = 0; digit < p; ++digit) next.push_back(r + q*digit);
+            }
+            // derivative=0 and quotient!=0 has no lift.
+        }
+        std::sort(next.begin(), next.end());
+        current = std::move(next);
+        q *= p;
+    }
+    return current;
+}
 std::vector<U> crt(const std::vector<U> &ps, const std::vector<std::vector<U>> &rs) {
     if (ps.size() != rs.size())
         throw std::runtime_error("CRT dimensions differ");
@@ -224,11 +299,11 @@ std::vector<U> crt(const std::vector<U> &ps, const std::vector<std::vector<U>> &
     U m = 1;
     for (size_t i = 0; i < ps.size(); ++i) {
         U p = ps[i];
-        if (m > U(INT64_MAX) / p)
+        if (p < 2 || m > U(INT64_MAX) / p)
             throw std::runtime_error("CRT modulus exceeds signed 64-bit domain");
-        U inv = power(m % p, p - 2, p);
-        if (inv == 0)
-            throw std::runtime_error("CRT factors are not coprime");
+        U inv = inverse_mod(m, p);
+        for (U t : rs[i])
+            if (t >= p) throw std::runtime_error("CRT root outside factor modulus");
         std::vector<U> next;
         if (rs[i].size() && out.size() > 1000000 / rs[i].size())
             throw std::runtime_error("CRT exceeds 1000000 roots per modulus; reduce factors");

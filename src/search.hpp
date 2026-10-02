@@ -9,6 +9,10 @@ struct Domain {
     U m_min = 1, m_max = 1000;
     uint32_t prime_limit = 0;
     std::vector<U> factor_counts;
+    std::vector<U> prime_exponents = {1}, power_factor_counts = {0};
+    bool prime_powers = false;
+    // Explicit prime-power modulus -> (base prime, exponent).
+    std::map<U, std::pair<U,U>> power_bases;
     std::vector<std::vector<U>> moduli;
     std::vector<std::pair<int64_t, int64_t>> ranges;
     Json canonical;
@@ -17,18 +21,28 @@ struct Domain {
     bool exclude_even = false;
     U excluded_explicit_moduli = 0;
 };
-Domain domain(const Json &config, const Database &db);
+Domain domain(const Json &config, const Database &db, bool planning = false);
+// Counts complete last-factor intervals without constructing CRT roots or
+// scanning k. Interrupted plans are explicitly labelled as lower bounds.
+Json plan(const Domain &d, const Database &db, double seconds, U max_prefixes);
+struct PowerFactor {
+    U prime, exponent;
+    std::vector<U> roots;
+};
 struct Generator {
     const Domain &d;
     std::vector<U> eligible;
     U shard, count, phase = 0, explicit_pos = 0;
     std::vector<U> chosen, next_index = {0};
+    std::map<U, PowerFactor> powers;
+    std::vector<U> power_options, next_distinct;
     std::chrono::steady_clock::time_point deadline = std::chrono::steady_clock::time_point::max();
     std::chrono::steady_clock::time_point yield_deadline =
         std::chrono::steady_clock::time_point::max();
     bool yielded = false;
     Generator(const Domain &dom, const Database &db, U s, U n);
     bool next(std::vector<U> &factors);
+    bool next_power(std::vector<U> &factors);
     Json state() const;
     void restore(const Json &j);
 };

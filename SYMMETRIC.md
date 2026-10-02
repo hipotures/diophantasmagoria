@@ -1,6 +1,9 @@
 # Symmetric cubic search on one computer
 
 Branch: `feature/symmetric-cubic-one-host`. Implementation task: issue #4.
+For the subsequent arithmetic extension in issue #6, completed low-factor
+coverage, prime-power stages, exact planning and current commands, see
+[docs/symmetric-next-search.md](docs/symmetric-next-search.md).
 Base: `b3754497e6243e870e54686fd9c8b8d1a3baac61`, the published optimized
 main branch containing the #3 chunked-epoch scheduler. When this branch was
 created, GitHub exposed no separate optimization branch. Main remains unchanged.

@@ -1,0 +1,2411 @@
+{
+  "platform": "Linux-7.0.0-34-generic-x86_64-with-glibc2.43",
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "threads": 4,
+  "max_tasks": 1000000,
+  "seconds_cap": 30.0,
+  "summary": [
+    {
+      "configuration_path": "configs/symmetric-one-square-lowfactor256.json",
+      "fixed": {
+        "median_candidates_per_wall_second": 112506915.07858418,
+        "min_candidates_per_wall_second": 102074474.95205818,
+        "max_candidates_per_wall_second": 112872838.87586874
+      }
+    },
+    {
+      "configuration_path": "Experiments/issue6-bench-configs/powers-3.json",
+      "fixed": {
+        "median_candidates_per_wall_second": 110657889.72030638,
+        "min_candidates_per_wall_second": 110073585.61473939,
+        "max_candidates_per_wall_second": 113317131.95998558
+      }
+    },
+    {
+      "configuration_path": "Experiments/issue6-bench-configs/powers-4.json",
+      "fixed": {
+        "median_candidates_per_wall_second": 107189845.70353809,
+        "min_candidates_per_wall_second": 106618589.54331373,
+        "max_candidates_per_wall_second": 108035339.87378588
+      }
+    },
+    {
+      "configuration_path": "Experiments/issue6-bench-configs/powers-5.json",
+      "fixed": {
+        "median_candidates_per_wall_second": 105866704.82794806,
+        "min_candidates_per_wall_second": 105108444.65025443,
+        "max_candidates_per_wall_second": 106897651.64841464
+      }
+    },
+    {
+      "configuration_path": "Experiments/issue6-bench-configs/prime1m-lowfactor.json",
+      "fixed": {
+        "median_candidates_per_wall_second": 122558357.14264347,
+        "min_candidates_per_wall_second": 120095187.78935124,
+        "max_candidates_per_wall_second": 125052305.94113709
+      }
+    }
+  ],
+  "measurements": [
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "1",
+          "2"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "bcb93f8d23b39d0c181fffc17d3158fac81297e08570da45f5c13f2d51b86e07",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.10132323",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "245852",
+        "candidates": "252241458",
+        "nonnegative": "125901267",
+        "survivors": "1393449",
+        "squares": "1393449",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "8.4750404579999845",
+        "square_seconds": "0.33162056700000025"
+      },
+      "search_seconds": "2.3446677789999999",
+      "generation_crt_seconds": "0.1273595160001961",
+      "persistence_seconds": "0.047755378999999328",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "2.0484340720000032",
+        "epoch_drain_seconds": "0.014716683999999999"
+      },
+      "invocation_cpu_seconds": "9.2662019999999998",
+      "invocation_mean_busy_cpus": "3.9520070823541031",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18828",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.4711511679925025,
+      "candidates_per_wall_second": 102074474.95205818,
+      "candidates_per_search_second": 107580894.9392314,
+      "final_cursor_sha256": "1bf27e76c751e3c1c526a86f8480522879173040fad6469214fc5b7444dfa6e0",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          1,
+          2
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "configs/symmetric-one-square-lowfactor256.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "configs/symmetric-one-square-lowfactor256.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-0-repeat-0-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 0,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "3"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "51a3863991862570451af80165e9d2a11cf489746c91f3929980c5155968e095",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.10135484",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "252903",
+        "candidates": "259475784",
+        "nonnegative": "129512175",
+        "survivors": "1322495",
+        "squares": "1322495",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "8.25013168300001",
+        "square_seconds": "0.30385318900000036"
+      },
+      "search_seconds": "2.2247474239999998",
+      "generation_crt_seconds": "0.14480512600015377",
+      "persistence_seconds": "0.056212645000000019",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "1.9214204970000039",
+        "epoch_drain_seconds": "0.014042155000000001"
+      },
+      "invocation_cpu_seconds": "8.9864540000000002",
+      "invocation_mean_busy_cpus": "4.0392873023157385",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18900",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.3572938280412927,
+      "candidates_per_wall_second": 110073585.61473939,
+      "candidates_per_search_second": 116631569.58890809,
+      "final_cursor_sha256": "e24a69718ed24681199197302869c6b89816f881ac7bd511de8ded8837d09b2b",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          3
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/powers-3.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/powers-3.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-1-repeat-0-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 0,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "4"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "4f37dde52f220ea3ebf75429b8c37b947da010b01449f55cc436d0c7d0251bdd",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.100440271",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "257038",
+        "candidates": "263720090",
+        "nonnegative": "131630491",
+        "survivors": "2142858",
+        "squares": "2142858",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "8.5212439220000071",
+        "square_seconds": "0.484183892"
+      },
+      "search_seconds": "2.3414784559999999",
+      "generation_crt_seconds": "0.16241603200034779",
+      "persistence_seconds": "0.057638603999999108",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "2.0181054720000002",
+        "epoch_drain_seconds": "0.010346496"
+      },
+      "invocation_cpu_seconds": "9.4437650000000009",
+      "invocation_mean_busy_cpus": "4.0332238031426044",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18908",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.4734907029778697,
+      "candidates_per_wall_second": 106618589.54331373,
+      "candidates_per_search_second": 112629731.5801568,
+      "final_cursor_sha256": "d303a362b9222ed6eeb9f61371e9a344087c12cf1c973a575cc574d92188d60a",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          4
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/powers-4.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/powers-4.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-2-repeat-0-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 0,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "5"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "159c7d4a35322cf65245bab40fb781c62a0576e87a48e753d93c89f36560e33d",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.099571303",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "255155",
+        "candidates": "261786336",
+        "nonnegative": "130665196",
+        "survivors": "2447349",
+        "squares": "2447349",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "8.5544188189999826",
+        "square_seconds": "0.57076413400000114"
+      },
+      "search_seconds": "2.355710953",
+      "generation_crt_seconds": "0.18871215900002361",
+      "persistence_seconds": "0.053305996999999876",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "2.0027411309999992",
+        "epoch_drain_seconds": "0.014389716"
+      },
+      "invocation_cpu_seconds": "9.5983289999999997",
+      "invocation_mean_busy_cpus": "4.0744689384100568",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18972",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.4727919549914077,
+      "candidates_per_wall_second": 105866704.82794806,
+      "candidates_per_search_second": 111128377.47203869,
+      "final_cursor_sha256": "aca7ef67fb7dcc50835bc79a8744b4ec7508a60d73f8302b7dc9060ee514881b",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          5
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/powers-5.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/powers-5.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-3-repeat-0-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 0,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "1000000",
+        "factor_counts": [
+          "1",
+          "2"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "40308882c95403bfdc7141ab643d0bb97c4cb23f94d160aec4723eae5a4abe92",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.11016480899999999",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "166621",
+        "candidates": "170952248",
+        "nonnegative": "85327202",
+        "survivors": "935378",
+        "squares": "935378",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "4.5441726319999942",
+        "square_seconds": "0.19435683800000031"
+      },
+      "search_seconds": "1.2407935880000001",
+      "generation_crt_seconds": "0.075703646000354341",
+      "persistence_seconds": "0.031285877000000017",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "1.0338663089999982",
+        "epoch_drain_seconds": "0.0094064890000000005"
+      },
+      "invocation_cpu_seconds": "5.0596100000000002",
+      "invocation_mean_busy_cpus": "4.0776750362747833",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18988",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 1.3670459470013157,
+      "candidates_per_wall_second": 125052305.94113709,
+      "candidates_per_search_second": 137776540.47644868,
+      "final_cursor_sha256": "1de49bd993a5286f02b4d02a13b469b840054cef27dccaae733e27bb976dfed7",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "1000000",
+        "factor_counts": [
+          1,
+          2
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_ranges": [
+          [
+            -256,
+            256
+          ]
+        ]
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/prime1m-lowfactor.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/prime1m-lowfactor.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-4-repeat-0-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 0,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "1",
+          "2"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "bcb93f8d23b39d0c181fffc17d3158fac81297e08570da45f5c13f2d51b86e07",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.099981402999999996",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "245852",
+        "candidates": "252241458",
+        "nonnegative": "125901267",
+        "survivors": "1393449",
+        "squares": "1393449",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "7.8527990360000111",
+        "square_seconds": "0.30963738099999977"
+      },
+      "search_seconds": "2.11632468",
+      "generation_crt_seconds": "0.12703834800007469",
+      "persistence_seconds": "0.053102605999999643",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "1.8289998340000018",
+        "epoch_drain_seconds": "0.014425138000000001"
+      },
+      "invocation_cpu_seconds": "8.5804919999999996",
+      "invocation_mean_busy_cpus": "4.0544035529477629",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18868",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.2347400890430436,
+      "candidates_per_wall_second": 112872838.87586874,
+      "candidates_per_search_second": 119188449.85543522,
+      "final_cursor_sha256": "1bf27e76c751e3c1c526a86f8480522879173040fad6469214fc5b7444dfa6e0",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          1,
+          2
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "configs/symmetric-one-square-lowfactor256.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "configs/symmetric-one-square-lowfactor256.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-0-repeat-1-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 1,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "3"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "51a3863991862570451af80165e9d2a11cf489746c91f3929980c5155968e095",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.100158842",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "252903",
+        "candidates": "259475784",
+        "nonnegative": "129512175",
+        "survivors": "1322495",
+        "squares": "1322495",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "8.1305371559999724",
+        "square_seconds": "0.29477625800000029"
+      },
+      "search_seconds": "2.1719867380000002",
+      "generation_crt_seconds": "0.15584161900032897",
+      "persistence_seconds": "0.04552093200000016",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "1.8645313759999962",
+        "epoch_drain_seconds": "0.015988172000000002"
+      },
+      "invocation_cpu_seconds": "8.863173999999999",
+      "invocation_mean_busy_cpus": "4.0806481797341361",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18816",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.2898195490124635,
+      "candidates_per_wall_second": 113317131.95998558,
+      "candidates_per_search_second": 119464718.38908622,
+      "final_cursor_sha256": "e24a69718ed24681199197302869c6b89816f881ac7bd511de8ded8837d09b2b",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          3
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/powers-3.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/powers-3.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-1-repeat-1-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 1,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "4"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "4f37dde52f220ea3ebf75429b8c37b947da010b01449f55cc436d0c7d0251bdd",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.101106691",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "257038",
+        "candidates": "263720090",
+        "nonnegative": "131630491",
+        "survivors": "2142858",
+        "squares": "2142858",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "8.5742914789999976",
+        "square_seconds": "0.48462914900000004"
+      },
+      "search_seconds": "2.3405362090000001",
+      "generation_crt_seconds": "0.15641746700036743",
+      "persistence_seconds": "0.053077863999999864",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "2.0237441769999975",
+        "epoch_drain_seconds": "0.010416334999999999"
+      },
+      "invocation_cpu_seconds": "9.4997609999999995",
+      "invocation_mean_busy_cpus": "4.0587725061911284",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18900",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.460308514011558,
+      "candidates_per_wall_second": 107189845.70353809,
+      "candidates_per_search_second": 112675073.76554327,
+      "final_cursor_sha256": "d303a362b9222ed6eeb9f61371e9a344087c12cf1c973a575cc574d92188d60a",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          4
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/powers-4.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/powers-4.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-2-repeat-1-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 1,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "5"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "159c7d4a35322cf65245bab40fb781c62a0576e87a48e753d93c89f36560e33d",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.10306022699999999",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "255155",
+        "candidates": "261786336",
+        "nonnegative": "130665196",
+        "survivors": "2447349",
+        "squares": "2447349",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "8.6051924759999832",
+        "square_seconds": "0.57302064699999988"
+      },
+      "search_seconds": "2.3688673420000002",
+      "generation_crt_seconds": "0.18061184400028235",
+      "persistence_seconds": "0.044580695999999753",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "2.0434873780000054",
+        "epoch_drain_seconds": "0.013792056"
+      },
+      "invocation_cpu_seconds": "9.6488690000000013",
+      "invocation_mean_busy_cpus": "4.0731753810769877",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "19032",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.4906308610225096,
+      "candidates_per_wall_second": 105108444.65025443,
+      "candidates_per_search_second": 110511184.54737006,
+      "final_cursor_sha256": "aca7ef67fb7dcc50835bc79a8744b4ec7508a60d73f8302b7dc9060ee514881b",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          5
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/powers-5.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/powers-5.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-3-repeat-1-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 1,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "1000000",
+        "factor_counts": [
+          "1",
+          "2"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "40308882c95403bfdc7141ab643d0bb97c4cb23f94d160aec4723eae5a4abe92",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.102648607",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "166621",
+        "candidates": "170952248",
+        "nonnegative": "85327202",
+        "survivors": "935378",
+        "squares": "935378",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "4.6271526280000046",
+        "square_seconds": "0.19479671699999979"
+      },
+      "search_seconds": "1.282359759",
+      "generation_crt_seconds": "0.077714499000456114",
+      "persistence_seconds": "0.057529655999999207",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "1.0441927259999968",
+        "epoch_drain_seconds": "0.0094260590000000005"
+      },
+      "invocation_cpu_seconds": "5.1432039999999999",
+      "invocation_mean_busy_cpus": "4.0106907064207178",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18960",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 1.4234729229938239,
+      "candidates_per_wall_second": 120095187.78935124,
+      "candidates_per_search_second": 133310677.28865,
+      "final_cursor_sha256": "1de49bd993a5286f02b4d02a13b469b840054cef27dccaae733e27bb976dfed7",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "1000000",
+        "factor_counts": [
+          1,
+          2
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_ranges": [
+          [
+            -256,
+            256
+          ]
+        ]
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/prime1m-lowfactor.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/prime1m-lowfactor.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-4-repeat-1-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 1,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "1",
+          "2"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "bcb93f8d23b39d0c181fffc17d3158fac81297e08570da45f5c13f2d51b86e07",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.100964581",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "245852",
+        "candidates": "252241458",
+        "nonnegative": "125901267",
+        "survivors": "1393449",
+        "squares": "1393449",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "7.9494250169999869",
+        "square_seconds": "0.30880476899999953"
+      },
+      "search_seconds": "2.1204700409999999",
+      "generation_crt_seconds": "0.12613452700018207",
+      "persistence_seconds": "0.033401220000000238",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "1.8503727239999967",
+        "epoch_drain_seconds": "0.015499805"
+      },
+      "invocation_cpu_seconds": "8.6746639999999999",
+      "invocation_mean_busy_cpus": "4.0908886819750165",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18852",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.242008482979145,
+      "candidates_per_wall_second": 112506915.07858418,
+      "candidates_per_search_second": 118955445.31298569,
+      "final_cursor_sha256": "1bf27e76c751e3c1c526a86f8480522879173040fad6469214fc5b7444dfa6e0",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          1,
+          2
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "configs/symmetric-one-square-lowfactor256.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "configs/symmetric-one-square-lowfactor256.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-0-repeat-2-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 2,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "3"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "51a3863991862570451af80165e9d2a11cf489746c91f3929980c5155968e095",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.101049351",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "252903",
+        "candidates": "259475784",
+        "nonnegative": "129512175",
+        "survivors": "1322495",
+        "squares": "1322495",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "8.3025078429999901",
+        "square_seconds": "0.30217405299999955"
+      },
+      "search_seconds": "2.223802005",
+      "generation_crt_seconds": "0.14394305099992621",
+      "persistence_seconds": "0.042381216000000374",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "1.9418785319999976",
+        "epoch_drain_seconds": "0.015453284000000001"
+      },
+      "invocation_cpu_seconds": "9.0316200000000002",
+      "invocation_mean_busy_cpus": "4.0613152469432467",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18876",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.344846668012906,
+      "candidates_per_wall_second": 110657889.72030638,
+      "candidates_per_search_second": 116681153.90515622,
+      "final_cursor_sha256": "e24a69718ed24681199197302869c6b89816f881ac7bd511de8ded8837d09b2b",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          3
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/powers-3.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/powers-3.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-1-repeat-2-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 2,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "4"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "4f37dde52f220ea3ebf75429b8c37b947da010b01449f55cc436d0c7d0251bdd",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.102411407",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "257038",
+        "candidates": "263720090",
+        "nonnegative": "131630491",
+        "survivors": "2142858",
+        "squares": "2142858",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "8.5412868160000155",
+        "square_seconds": "0.48348176100000073"
+      },
+      "search_seconds": "2.319456948",
+      "generation_crt_seconds": "0.1598343890003277",
+      "persistence_seconds": "0.042397372000000308",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "2.0077504570000024",
+        "epoch_drain_seconds": "0.010756533000000002"
+      },
+      "invocation_cpu_seconds": "9.4713370000000001",
+      "invocation_mean_busy_cpus": "4.0834039876631039",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18880",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.4410539209493436,
+      "candidates_per_wall_second": 108035339.87378588,
+      "candidates_per_search_second": 113699066.5972042,
+      "final_cursor_sha256": "d303a362b9222ed6eeb9f61371e9a344087c12cf1c973a575cc574d92188d60a",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          4
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/powers-4.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/powers-4.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-2-repeat-2-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 2,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "prime-power-prefix2-v1",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "10000",
+        "factor_counts": [
+          "5"
+        ],
+        "moduli": [],
+        "prime_exponents": [
+          "1",
+          "2"
+        ],
+        "power_factor_counts": [
+          "1"
+        ],
+        "lifting": "complete-hensel-v1",
+        "prime_power_moduli": "",
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "159c7d4a35322cf65245bab40fb781c62a0576e87a48e753d93c89f36560e33d",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.10288573799999999",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "255155",
+        "candidates": "261786336",
+        "nonnegative": "130665196",
+        "survivors": "2447349",
+        "squares": "2447349",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "8.4621626500000175",
+        "square_seconds": "0.56526876299999917"
+      },
+      "search_seconds": "2.317945173",
+      "generation_crt_seconds": "0.19310175000003804",
+      "persistence_seconds": "0.038420238999999676",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "1.9794473790000013",
+        "epoch_drain_seconds": "0.014108374"
+      },
+      "invocation_cpu_seconds": "9.506494",
+      "invocation_mean_busy_cpus": "4.1012339485474172",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18964",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 2.4489437509910204,
+      "candidates_per_wall_second": 106897651.64841464,
+      "candidates_per_search_second": 112938968.12114115,
+      "final_cursor_sha256": "aca7ef67fb7dcc50835bc79a8744b4ec7508a60d73f8302b7dc9060ee514881b",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "10000",
+        "factor_counts": [
+          5
+        ],
+        "prime_exponents": [
+          1,
+          2
+        ],
+        "power_factor_counts": [
+          1
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_min": "-256",
+        "k_max": "256"
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/powers-5.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/powers-5.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-3-repeat-2-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 2,
+      "local_filter_enabled": false
+    },
+    {
+      "schema": "dio-run-v1",
+      "domain_definition": {
+        "schema": "dio-domain-v1",
+        "generator": "lexicographic-prefix2-v2",
+        "local_filter": {
+          "version": "even-square-free-g1-g2-v1",
+          "exclude_even_square_free": "false"
+        },
+        "tile": "roots16-k64-v1",
+        "coefficients": [
+          "1",
+          "4",
+          "0",
+          "26"
+        ],
+        "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "prime_limit": "1000000",
+        "factor_counts": [
+          "1",
+          "2"
+        ],
+        "moduli": [],
+        "k_ranges": [
+          [
+            "-256",
+            "256"
+          ]
+        ],
+        "signs": "+1,-1",
+        "backend": "symmetric-cubic-v1"
+      },
+      "domain": "40308882c95403bfdc7141ab643d0bb97c4cb23f94d160aec4723eae5a4abe92",
+      "root_database": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a",
+      "shard": "0",
+      "shards": "1",
+      "threads": "4",
+      "arithmetic": "big",
+      "build_commit": "ec2d4c3337296b56430d0a2e14915deaff15390c",
+      "compiler": "GNU-15.2.0",
+      "boost": "1_90",
+      "build_source": "cd9c95f4023081fa8a8cc1242e338117b12a99a70914f9e33e73ac1280e62373",
+      "build_type": "Release",
+      "setup_seconds": "0.104856983",
+      "sieve": "64,63,65,11",
+      "scheduler": "chunked-epochs-v1",
+      "chunk_tiles": "256",
+      "queue_chunks": "8",
+      "checkpoint_tiles": "262144",
+      "checkpoint_seconds": "2",
+      "trace": "false",
+      "planning": "Streaming domain; total work and ETA are not enumerated",
+      "analytical_exclusions": {
+        "rule": "even-square-free-g1-g2-v1",
+        "region": "None",
+        "basis": "Exact coefficient recognition; modulo-16 certificate; both signs of d",
+        "application": "Before combination generation or explicit-modulus CRT",
+        "generated_moduli_excluded": "0",
+        "explicit_moduli_excluded": "0",
+        "explicit_count_scope": "Entire requested list, before sharding",
+        "counter_scope": "Enumerated work only; analytically excluded candidates are not counted"
+      },
+      "task_limit": "1000000",
+      "time_limit_seconds": "30",
+      "complete": "false",
+      "counters": {
+        "tasks": "1000000",
+        "moduli": "111112",
+        "roots": "166621",
+        "candidates": "170952248",
+        "nonnegative": "85327202",
+        "survivors": "935378",
+        "squares": "935378",
+        "hits": "0",
+        "native_tasks": "0",
+        "big_tasks": "1000000",
+        "out_of_order_batches": "4",
+        "candidate_seconds": "4.554813397000002",
+        "square_seconds": "0.19537913400000023"
+      },
+      "search_seconds": "1.258110316",
+      "generation_crt_seconds": "0.077282450000451808",
+      "persistence_seconds": "0.052083765999999899",
+      "invocation_metrics": {
+        "epochs": "4",
+        "chunks": "3907",
+        "checkpoint_writes": "5",
+        "result_append_calls": "0",
+        "result_fsync_calls": "0",
+        "trace_append_calls": "0",
+        "trace_fsync_calls": "0",
+        "out_of_order_epochs": "4",
+        "peak_inflight_chunks": "8",
+        "producer_wait_seconds": "1.0247763950000006",
+        "epoch_drain_seconds": "0.0092903870000000006"
+      },
+      "invocation_cpu_seconds": "5.0713039999999996",
+      "invocation_mean_busy_cpus": "4.0308440519028563",
+      "result_checksum_algorithm": "sha256-record-chain-v1",
+      "result_checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_bytes": "0",
+      "peak_rss_kib": "18948",
+      "meaning": "Partial configured shard; resume required",
+      "process_wall_seconds": 1.3948640630114824,
+      "candidates_per_wall_second": 122558357.14264347,
+      "candidates_per_search_second": 135880173.4839284,
+      "final_cursor_sha256": "1de49bd993a5286f02b4d02a13b469b840054cef27dccaae733e27bb976dfed7",
+      "configuration": {
+        "backend": "symmetric-cubic",
+        "polynomial": "symmetric",
+        "prime_limit": "1000000",
+        "factor_counts": [
+          1,
+          2
+        ],
+        "m_min": "2",
+        "m_max": "10000000000000",
+        "k_ranges": [
+          [
+            -256,
+            256
+          ]
+        ]
+      },
+      "configuration_path": "Experiments/issue6-bench-configs/prime1m-lowfactor.json",
+      "command": [
+        "build/diophantasmagoria",
+        "search",
+        "--config",
+        "Experiments/issue6-bench-configs/prime1m-lowfactor.json",
+        "--db",
+        "Experiments/issue6-symmetric-1m.roots.jsonl",
+        "--out",
+        "Experiments/issue6-throughput/config-4-repeat-2-local-0",
+        "--threads",
+        "4",
+        "--max-tasks",
+        "1000000",
+        "--seconds",
+        "30.0",
+        "--progress-seconds",
+        "0"
+      ],
+      "repeat": 2,
+      "local_filter_enabled": false
+    }
+  ],
+  "scope": "Deterministic bounded prefixes; no full-campaign timing guarantee"
+}

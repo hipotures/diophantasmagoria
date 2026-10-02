@@ -50,10 +50,22 @@ def merge(directories):
                 raise ValueError("Witness backend does not match manifest")
             m, k = int(row["m"]), int(row["k"])
             factors = list(map(int, row["factors"]))
+            exponents = list(map(int, row.get("factor_exponents", [1]*len(factors))))
             explicit = definition["moduli"]
+            explicit_powers = definition.get("prime_power_moduli")
+            if explicit_powers:
+                factored = [{"prime":str(p),"exponent":str(e)} for p,e in zip(factors,exponents)]
+                if factored not in explicit_powers:
+                    raise ValueError("Witness is outside explicit prime-power domain")
+            elif "prime_exponents" in definition:
+                if (any(e not in map(int,definition["prime_exponents"]) for e in exponents)
+                        or sum(e > 1 for e in exponents) not in map(int,definition["power_factor_counts"])):
+                    raise ValueError("Witness exponents are outside the declared domain")
+            elif any(e != 1 for e in exponents):
+                raise ValueError("Prime-power witness relabeled as square-free")
             if (not int(definition["m_min"]) <= m <= int(definition["m_max"])
                     or not any(int(lo) <= k <= int(hi) for lo, hi in definition["k_ranges"])
-                    or (explicit and factors not in [list(map(int, ps)) for ps in explicit])
+                    or (explicit and not explicit_powers and factors not in [list(map(int, ps)) for ps in explicit])
                     or (not explicit and (len(factors) not in map(int, definition["factor_counts"])
                                           or max(factors) > int(definition["prime_limit"])))):
                 raise ValueError("Witness is outside the declared search domain")
@@ -74,7 +86,7 @@ def merge(directories):
                "incomplete_shards": list(map(str, sorted(set(range(shard_count)) - completed))),
                "complete": len(completed) == shard_count,
                "unique_witnesses": str(len(hits)),
-               "meaning": "Exhaustion applies only to the configured square-free domain"}
+               "meaning": "Exhaustion applies only to the configured arithmetic domain"}
     return summary, [hits[key] for key in sorted(hits)]
 
 

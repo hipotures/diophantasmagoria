@@ -2,6 +2,7 @@
 """Independent symmetric-backend coverage, verification and recovery gates."""
 import copy
 import hashlib
+import itertools
 import json
 import os
 from pathlib import Path
@@ -145,6 +146,105 @@ def main():
                 pass
             else:
                 raise AssertionError("Backend-confused manifest accepted")
+    # Exponents are independent arithmetic coverage. Direct residues, without
+    # Hensel or CRT, supply the oracle for all configured tiny prime powers.
+    for constant in (1,4):
+        db = WORK / f"powers-{constant}.roots.jsonl"
+        run("roots", "--coefficients", f"{constant},4,0,26", "--limit", 19, "--out", db)
+        data = {"backend":"symmetric-cubic", "coefficients":[constant,4,0,26],
+                "prime_limit":"19", "factor_counts":[1,2,3], "prime_exponents":[1,2,3,4],
+                "power_factor_counts":[1,2,3], "m_min":"2", "m_max":"600",
+                "k_ranges":[["-3","-1"],["1","3"]]}
+        cfg = config(f"powers-{constant}",data)
+        expected, coverage = structured(data)
+        partial_plan = json.loads(run("plan","--config",cfg,"--db",db,"--max-prefixes",1).stdout)
+        assert partial_plan["complete"]=="false" and "lower bound" in partial_plan["count_scope"]
+        assert partial_plan["domain_definition"]["prime_power_moduli"]==[]
+        empty_data = dict(data,coefficients=[1,4,0,26],prime_limit="3")
+        empty_cfg = config(f"power-empty-{constant}",empty_data)
+        # Use a matching C=1 cache; H has no roots modulo 2 or 3.
+        empty_db = WORK/"empty-power-roots.jsonl"
+        if not empty_db.exists():
+            run("roots","--polynomial","symmetric","--limit",3,"--out",empty_db)
+        empty_plan = json.loads(run("plan","--config",empty_cfg,"--db",empty_db).stdout)
+        assert empty_plan["complete"]=="true" and empty_plan["strata"]==[]
+        assert all(empty_plan[key]=="0" for key in ("moduli","roots","tasks","candidates"))
+        if constant == 4:
+            assert (-1,-1,2) in expected  # m=4 and derivative=0 at p=2.
+        one,_ = search(f"powers-{constant}-one",cfg,db,"--trace","--threads",1,"--arithmetic","128")
+        many,_ = search(f"powers-{constant}-many",cfg,db,"--trace","--threads",4,"--arithmetic","big")
+        bare,_ = search(f"powers-{constant}-bare",cfg,db,"--trace","--no-sieve")
+        for out in (one,many,bare):
+            assert points(out)==coverage and hits(out)==expected
+            report = json.loads((out/"report.json").read_text())
+            assert report["complete"]=="true"
+            # Exact planner totals agree with the generator/CRT search counters.
+            planned = json.loads(run("plan","--config",cfg,"--db",db).stdout)
+            assert planned["complete"]=="true"
+            for key in ("moduli","roots","tasks","candidates"):
+                assert int(planned[key])==int(report["counters"][key]), (key,planned,report)
+        union,shards = set(),[]
+        for shard in range(3):
+            out,_ = search(f"powers-{constant}-shard{shard}",cfg,db,"--trace","--threads",2,
+                           "--shard",f"{shard}/3")
+            current = points(out)
+            assert not union & current
+            union |= current
+            shards.append(out)
+        assert union==coverage and merge(shards)[0]["complete"]
+        assert {verify_record(r) for r in merge(shards)[1]}==expected
+        replay,_ = search(f"powers-{constant}-resume",cfg,db,"--trace","--max-tasks",1,
+                          "--chunk-tiles",1)
+        search(f"powers-{constant}-resume",cfg,db,"--trace","--resume","--threads",3)
+        assert points(replay)==coverage and hits(replay)==expected
+        changed = config(f"powers-{constant}-changed",dict(data,prime_exponents=[1,2]))
+        search(f"powers-{constant}-resume",changed,db,"--trace","--resume",good=False)
+        squarefree = dict(data)
+        del squarefree["prime_exponents"]
+        del squarefree["power_factor_counts"]
+        squarefree_cfg = config(f"powers-{constant}-squarefree",squarefree)
+        _,squarefree_coverage = structured(squarefree)
+        assert not coverage & squarefree_coverage
+        search(f"powers-{constant}-resume",squarefree_cfg,db,"--trace","--resume",good=False)
+        explicit = dict(data,prime_power_moduli=[
+            [{"prime":"2","exponent":"2"}],
+            [{"prime":"2","exponent":"3"},{"prime":"3","exponent":"2"}]
+        ])
+        for key in ("prime_limit","factor_counts","prime_exponents","power_factor_counts"):
+            del explicit[key]
+        explicit_cfg = config(f"powers-{constant}-explicit",explicit)
+        out,_ = search(f"powers-{constant}-explicit",explicit_cfg,db,"--trace")
+        wanted,covered = structured(explicit)
+        assert points(out)==covered and hits(out)==wanted and merge([out])[0]["complete"]
+        if constant == 4:
+            row = next(records(out/"results.jsonl"))
+            assert row["factor_exponents"]==["2"]
+            bad = copy.deepcopy(row); bad["factor_exponents"]=["1"]; reject_record(bad)
+            # Abrupt checkpoint replay exercises the new generator frontier.
+            if FAULT:
+                fault = WORK/"power-fault"
+                p = subprocess.run([str(FAULT),str(cfg),str(db),str(fault),"before_checkpoint","4"],
+                                   text=True,capture_output=True,timeout=60)
+                assert p.returncode==86,(p.stdout,p.stderr)
+                run("search","--config",cfg,"--db",db,"--out",fault,"--trace","--resume")
+                assert points(fault)==coverage and hits(fault)==expected
+    low = json.loads((ROOT/"configs/symmetric-lowfactor256.json").read_text())
+    full = json.loads((ROOT/"configs/symmetric-primepowers256.json").read_text())
+    stages = [json.loads((ROOT/"configs"/name).read_text()) for name in (
+        "symmetric-one-square-lowfactor256.json","symmetric-one-square-highfactor256.json",
+        "symmetric-multiple-squares256.json")]
+    assert set(low["factor_counts"])=={1,2} and not set(low["factor_counts"]) & {3,4,5}
+    regions = []
+    for stage in stages:
+        assert min(stage["power_factor_counts"])>=1 and stage["prime_exponents"]==[1,2]
+        regions.append({(f,es) for f in stage["factor_counts"]
+                        for es in itertools.product([1,2],repeat=f)
+                        if sum(e>1 for e in es) in stage["power_factor_counts"]})
+    all_regions = {(f,es) for f in full["factor_counts"]
+                   for es in itertools.product([1,2],repeat=f)
+                   if sum(e>1 for e in es) in full["power_factor_counts"]}
+    assert set.union(*regions)==all_regions
+    assert all(not regions[i] & regions[j] for i in range(3) for j in range(i))
     # Explicit large regression: factors only, never root/coordinates as input.
     db = WORK / "regression.roots.jsonl"
     run("roots", "--polynomial", "symmetric", "--primes", "13,79,181,269,613", "--out", db)

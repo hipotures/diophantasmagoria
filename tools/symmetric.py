@@ -36,10 +36,13 @@ def verify_record(row):
     a, d, m, r, k, delta, s = (int(row[key]) for key in
                               ("a", "d", "m", "root", "k", "discriminant", "square_root"))
     factors = list(map(int, row["factors"]))
+    exponents = list(map(int, row.get("factor_exponents", [1]*len(factors))))
     if (a != x+y or d != 3*a+z or m != abs(d) or m < 2 or not 0 <= r < m
             or a != r+k*m or root_polynomial(r, constant) % m
             or not 1 <= len(factors) <= 5 or factors != sorted(set(factors))
-            or math.prod(factors) != m or not all(prime(p) for p in factors)
+            or len(exponents) != len(factors) or not all(1 <= e <= 62 for e in exponents)
+            or math.prod(p**e for p,e in zip(factors,exponents)) != m
+            or not all(prime(p) for p in factors)
             or root_polynomial(a, constant) % d):
         raise ValueError("Invalid symmetric divisibility/CRT derivation")
     # Independent reconstruction through the product b=xy, not the searcher's
@@ -64,15 +67,23 @@ def structured(config):
     lo, hi = int(config["m_min"]), int(config["m_max"])
     if not 2 <= lo <= hi <= 100000:
         raise ValueError("Oracle requires 2 <= m_min <= m_max <= 100000")
-    if "moduli" in config:
+    if "prime_power_moduli" in config:
+        moduli = [math.prod(int(f["prime"])**int(f["exponent"]) for f in row)
+                  for row in config["prime_power_moduli"]]
+    elif "moduli" in config:
         moduli = [math.prod(map(int, ps)) for ps in config["moduli"]]
     else:
         limit = int(config["prime_limit"])
         if limit > 1000:
             raise ValueError("Tiny oracle prime limit exceeds 1000")
         ps = [p for p in range(2, limit+1) if prime(p)]
-        moduli = (math.prod(factors) for count in config["factor_counts"]
-                  for factors in itertools.combinations(ps, int(count)))
+        exponents = list(map(int, config.get("prime_exponents", [1])))
+        powered_counts = list(map(int, config.get("power_factor_counts", range(6))))
+        moduli = (math.prod(p**e for p,e in zip(factors,es))
+                  for count in config["factor_counts"]
+                  for factors in itertools.combinations(ps, int(count))
+                  for es in itertools.product(exponents,repeat=int(count))
+                  if sum(e > 1 for e in es) in powered_counts)
     ranges = config.get("k_ranges", [[config.get("k_min"), config.get("k_max")]])
     hits, coverage = set(), set()
     for m in moduli:

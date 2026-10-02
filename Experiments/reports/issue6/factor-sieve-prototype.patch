@@ -1,0 +1,214 @@
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -29,7 +29,7 @@
+                          "[--coefficients E,C,B,A] (--limit N | --primes p,q,...) --out FILE\n"
+                       << "diophantasmagoria search --config FILE --db FILE --out DIR [--threads N] "
+                          "[--shard I/N] [--arithmetic auto|128|big] [--resume] [--dry-run] "
+-                         "[--seconds N] [--max-tasks N] [--stop-on-hit] [--trace] [--no-sieve] "
++                         "[--seconds N] [--max-tasks N] [--stop-on-hit] [--trace] [--no-sieve] [--factor-sieve] "
+                          "[--chunk-tiles N] [--queue-chunks N] [--checkpoint-tiles N] "
+                          "[--checkpoint-seconds N] [--progress-seconds N]\n"
+                       << "Independent verification, direct enumeration and merging: python3 "
+@@ -43,7 +43,7 @@
+             throw std::runtime_error("Unknown command");
+         std::map<std::string, std::string> opts;
+         const std::set<std::string> flags = {"--resume", "--dry-run", "--stop-on-hit", "--trace",
+-                                             "--no-sieve"};
++                                             "--no-sieve", "--factor-sieve"};
+         const std::set<std::string> values =
+             cmd == "roots" ? std::set<std::string>{"--polynomial", "--coefficients", "--limit",
+                                                    "--primes", "--out"}
+@@ -130,6 +130,7 @@
+         o.stop_on_hit = opts.contains("--stop-on-hit");
+         o.trace = opts.contains("--trace");
+         o.no_sieve = opts.contains("--no-sieve");
++        o.factor_sieve = opts.contains("--factor-sieve");
+         o.max_tasks = u("--max-tasks", 0);
+         o.chunk_tiles = u("--chunk-tiles", 256);
+         o.queue_chunks = u("--queue-chunks", 0);
+--- a/src/search.hpp
++++ b/src/search.hpp
+@@ -52,6 +52,7 @@
+     U shard = 0, shards = 1;
+     std::string arithmetic = "auto";
+     bool resume = false, dry_run = false, stop_on_hit = false, trace = false, no_sieve = false;
++    bool factor_sieve = false;
+     double seconds = 0;
+     U max_tasks = 0;
+     U chunk_tiles = 256, queue_chunks = 0, checkpoint_tiles = 262144;
+--- a/src/search.cpp
++++ b/src/search.cpp
+@@ -1,5 +1,6 @@
+ #include "search.hpp"
+ #include "equation.hpp"
++#include "factor_sieve.hpp"
+ #include <algorithm>
+ #include <atomic>
+ #include <boost/version.hpp>
+@@ -644,6 +645,7 @@
+ struct Stats {
+     U tasks = 0, moduli = 0, roots = 0, candidates = 0, nonnegative = 0, survivors = 0, squares = 0,
+       hits = 0, native_tasks = 0, big_tasks = 0, out_of_order_batches = 0;
++    U factor_rejected = 0;
+     double candidate_seconds = 0, square_seconds = 0;
+     void add(const Stats &b) {
+         if (candidates > UINT64_MAX - b.candidates || tasks > UINT64_MAX - b.tasks ||
+@@ -659,6 +661,7 @@
+         hits += b.hits;
+         native_tasks += b.native_tasks;
+         big_tasks += b.big_tasks;
++        factor_rejected += b.factor_rejected;
+         candidate_seconds += b.candidate_seconds;
+         square_seconds += b.square_seconds;
+     }
+@@ -675,6 +678,7 @@
+         PUT(hits);
+         PUT(native_tasks);
+         PUT(big_tasks);
++        PUT(factor_rejected);
+         PUT(out_of_order_batches);
+         PUT(candidate_seconds);
+         PUT(square_seconds);
+@@ -693,6 +697,7 @@
+         GET(hits);
+         GET(native_tasks);
+         GET(big_tasks);
++        factor_rejected = j.get<U>("factor_rejected",0);
+         GET(out_of_order_batches);
+         GET(candidate_seconds);
+         GET(square_seconds);
+@@ -706,7 +711,8 @@
+ template <class N> Big big(const N &n) {
+     return Big(n);
+ }
+-template <class N, bool Symmetric = false> Result run_task(const Domain &d, const Task &t, const Options &o) {
++template <class N, bool Symmetric = false> Result run_task(const Domain &d, const Task &t, const Options &o,
++                                                        const FactorSieve *factor_sieve = nullptr) {
+     auto start = Clock::now();
+     Result out;
+     std::string task_id;
+@@ -730,6 +736,8 @@
+         a[i] = d.a[i].convert_to<N>();
+     const N m = t.m;
+     for (U r : t.rs) {
++        std::array<U,2> masks = {UINT64_MAX,UINT64_MAX};
++        if (factor_sieve) masks = factor_sieve->masks(d.a,t.m,r,t.factors,t.lo,t.hi);
+         CandidateSequence<N, Symmetric> diff(a, t.m, r, t.lo);
+         for (int64_t k = t.lo; k <= t.hi; ++k) {
+             for (int sign : {1, -1}) {
+@@ -747,6 +755,10 @@
+                 if (delta < 0)
+                     continue;
+                 ++st.nonnegative;
++                if (!(masks[sign == 1 ? 0 : 1] & (U(1)<<static_cast<U>(k-t.lo)))) {
++                    ++st.factor_rejected;
++                    continue;
++                }
+                 if (!o.no_sieve && !sieve(delta))
+                     continue;
+                 ++st.survivors;
+@@ -847,6 +859,8 @@
+         throw std::runtime_error("Invalid progress interval");
+     if (o.arithmetic != "auto" && o.arithmetic != "128" && o.arithmetic != "big")
+         throw std::runtime_error("Arithmetic must be auto, 128, or big");
++    if (o.factor_sieve && (!d.symmetric || o.no_sieve))
++        throw std::runtime_error("Factor sieve requires symmetric-cubic and the fixed sieve");
+     bool safe = true;
+     for (auto [lo, hi] : d.ranges)
+         safe = safe && (d.symmetric ? symmetric_native_safe(d.a, d.m_max, lo, hi)
+@@ -870,6 +884,7 @@
+     manifest.put("build_type", BUILD_TYPE);
+     manifest.put("setup_seconds", setup_seconds);
+     manifest.put("sieve", o.no_sieve ? "disabled" : "64,63,65,11");
++    if (o.factor_sieve) manifest.put("factor_sieve","affine-mod-prime-v1");
+     manifest.put("scheduler", "chunked-epochs-v1");
+     manifest.put("chunk_tiles", o.chunk_tiles);
+     manifest.put("queue_chunks", queue_chunks);
+@@ -900,6 +915,15 @@
+     fs::path checkpoint = o.output / "checkpoint.json", results = o.output / "results.jsonl",
+              trace = o.output / "coverage.jsonl";
+     Source source(d, db, o.shard, o.shards);
++    std::unique_ptr<FactorSieve> factor_sieve;
++    if (o.factor_sieve) {
++        std::vector<U> explicit_primes;
++        for (const auto &fs : d.moduli)
++            for (U q : fs) explicit_primes.push_back(d.prime_powers ? d.power_bases.at(q).first : q);
++        std::sort(explicit_primes.begin(),explicit_primes.end());
++        explicit_primes.erase(std::unique(explicit_primes.begin(),explicit_primes.end()),explicit_primes.end());
++        factor_sieve = std::make_unique<FactorSieve>(db,d.prime_limit,explicit_primes);
++    }
+     Stats totals;
+     double previous_seconds = 0, previous_generation = 0, previous_persistence = 0;
+     bool complete = false;
+@@ -1109,8 +1133,8 @@
+                         for (size_t i = 0; i < tasks.size(); ++i) {
+                             Result tile;
+                             if (d.symmetric)
+-                                tile = use_native ? run_task<__int128_t, true>(d, tasks[i], o)
+-                                                  : run_task<Big, true>(d, tasks[i], o);
++                                tile = use_native ? run_task<__int128_t, true>(d, tasks[i], o,factor_sieve.get())
++                                                  : run_task<Big, true>(d, tasks[i], o,factor_sieve.get());
+                             else
+                                 tile = use_native ? run_task<__int128_t>(d, tasks[i], o)
+                                                   : run_task<Big>(d, tasks[i], o);
+--- /dev/null
++++ b/src/factor_sieve.hpp
+@@ -0,0 +1,58 @@
++#pragma once
++#include "io.hpp"
++#include <algorithm>
++
++namespace dio {
++// Optional local necessary condition. All coefficients are obtained by exact
++// division before reducing; no inverse of m modulo its factors is used.
++class FactorSieve {
++    std::map<U,std::vector<bool>> squares;
++public:
++    FactorSieve(const Database &db, uint32_t prime_limit, const std::vector<U> &explicit_primes = {}) {
++        U entries = 0;
++        for (const auto &[p,rs] : db.data) {
++            if (rs.empty() || (prime_limit && p > prime_limit) ||
++                (!explicit_primes.empty() && !std::binary_search(explicit_primes.begin(),explicit_primes.end(),p))) continue;
++            // These primes are already present in the fixed-modulus sieve.
++            if (p <= 13) continue;
++            if (p > 1000000 || entries > 16000000-p)
++                throw std::runtime_error("Factor sieve table budget exceeded");
++            entries += p;
++            std::vector<bool> table(p,false);
++            for (U s=0;s<p;++s) table[(s*s)%p] = true;
++            squares.emplace(p,std::move(table));
++        }
++    }
++    std::array<U,2> masks(const Poly &poly, U m, U r, const std::vector<U> &factors,
++                          int64_t lo, int64_t hi) const {
++        U length = static_cast<U>(hi-lo+1);
++        if (length < 1 || length > 64) throw std::runtime_error("Invalid factor-sieve tile");
++        U all = length == 64 ? UINT64_MAX : (U(1)<<length)-1;
++        std::array<U,2> masks = {all,all};
++        Big value = eval(poly,Big(r));
++        if (value%m != 0) throw std::runtime_error("Factor-sieve input is not a CRT root");
++        Big quotient = value/m;
++        Big derivative = (3*poly[3]*r+2*poly[2])*r+poly[1];
++        for (U p : factors) {
++            auto found = squares.find(p);
++            if (found == squares.end()) continue;
++            auto mod = [p](Big n) { n%=p; if(n<0) n+=p; return n.convert_to<U>(); };
++            const auto &table = found->second;
++            U slope = mod(Big(4*derivative)), negative_slope = (p-slope)%p;
++            U common = mod(Big(-107*Big(r)*r-8));
++            U q = mod(Big(4*(quotient+Big(lo)*derivative)));
++            U plus = (common+q)%p, minus = (common+p-q)%p;
++            // slope=0 is the singular case: the local condition is constant in k.
++            for (U j=0;j<length;++j) {
++                U bit = U(1)<<j;
++                if ((masks[0]&bit) && !table[plus]) masks[0] &= ~bit;
++                if ((masks[1]&bit) && !table[minus]) masks[1] &= ~bit;
++                plus += slope; if (plus>=p) plus-=p;
++                minus += negative_slope; if (minus>=p) minus-=p;
++            }
++            if (!(masks[0]|masks[1])) break;
++        }
++        return masks;
++    }
++};
++} // namespace dio

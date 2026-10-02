@@ -28,8 +28,10 @@ For C=1, d=0 implies H(a)=0. The rational-root theorem leaves integer roots
 H is odd for every integer a, so an even modulus has no root at prime 2.
 The g1/g2 modulo-16 filter is NOT applied to this backend. Other C values
 may allow even moduli; tests include C=4 with (x,y,z)=(2,-1,-1), d=2.
-The engine retains its declared m>=2 restriction. Prime powers and m=1 are
-outside the configured heuristic domain, rather than silently claimed covered.
+The engine retains its declared m>=2 restriction. Prime powers are supported
+through complete Hensel lifting; m=1 remains outside the configured domain.
+See [the next-search report](symmetric-next-search.md) for exponent controls,
+resource bounds, new disjoint campaigns and measured work counts.
 
 ## Root polynomial is not equation identity
 

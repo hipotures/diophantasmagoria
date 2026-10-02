@@ -1,0 +1,44 @@
+[
+  {
+    "path": "Experiments/symmetric-10000.roots.jsonl",
+    "header": {
+      "schema": "dio-roots-v1",
+      "algorithm": "finite-field-gcd-split-v1",
+      "coefficients": [
+        "1",
+        "4",
+        "0",
+        "26"
+      ],
+      "coverage": "all-primes",
+      "prime_limit": "10000"
+    },
+    "footer": {
+      "checksum": "e4c61cf3c4af1e80fdead9b468d8632ad0a3603444cbd386a5ea38d916aca369"
+    },
+    "rows": 1229,
+    "root_bearing_primes": 789,
+    "roots": 1182
+  },
+  {
+    "path": "Experiments/issue6-symmetric-1m.roots.jsonl",
+    "header": {
+      "schema": "dio-roots-v1",
+      "algorithm": "finite-field-gcd-split-v1",
+      "coefficients": [
+        "1",
+        "4",
+        "0",
+        "26"
+      ],
+      "coverage": "all-primes",
+      "prime_limit": "1000000"
+    },
+    "footer": {
+      "checksum": "fcd5c019391230ef4414c642cf1680002d04acc268fe4f4656af1519d7414b1a"
+    },
+    "rows": 78498,
+    "root_bearing_primes": 52370,
+    "roots": 78545
+  }
+]

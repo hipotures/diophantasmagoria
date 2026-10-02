@@ -1,0 +1,15 @@
+Test project /home/user/DEV/diophantasmagoria-symmetric/build-sanitize
+    Start 1: unit
+1/5 Test #1: unit .............................   Passed    7.19 sec
+    Start 2: integration
+2/5 Test #2: integration ......................   Passed   83.94 sec
+    Start 3: epochs
+3/5 Test #3: epochs ...........................   Passed   18.23 sec
+    Start 4: symmetric_math
+4/5 Test #4: symmetric_math ...................   Passed    4.80 sec
+    Start 5: symmetric_backend
+5/5 Test #5: symmetric_backend ................   Passed    7.67 sec
+
+100% tests passed, 0 tests failed out of 5
+
+Total Test time (real) = 121.83 sec

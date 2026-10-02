@@ -1,0 +1,79 @@
+{
+  "basis": "Exact candidate counts / observed process wall rate endpoints; deterministic prefix extrapolation, not a statistical confidence interval",
+  "rate_min": 102074474.95205818,
+  "rate_max": 125052305.94113709,
+  "rows": [
+    {
+      "domain": "one-square-low",
+      "moduli": 622521,
+      "roots": 1394765,
+      "candidates": 1431028890,
+      "tasks": 5602689,
+      "projected_seconds_min": 11.443442639703056,
+      "projected_seconds_max": 14.019458740024069
+    },
+    {
+      "domain": "one-square-high",
+      "moduli": 1924020986,
+      "roots": 9687552842,
+      "candidates": 9939429215892,
+      "tasks": 18486532296,
+      "projected_seconds_min": 79482.17460756423,
+      "projected_seconds_max": 97374.28696606375
+    },
+    {
+      "domain": "multiple-squares",
+      "moduli": 193739323,
+      "roots": 851155129,
+      "candidates": 873285162354,
+      "tasks": 1820872377,
+      "projected_seconds_min": 6983.359129459483,
+      "projected_seconds_max": 8555.37256267211
+    },
+    {
+      "domain": "all-primepowers",
+      "moduli": 2118382830,
+      "roots": 10540102736,
+      "candidates": 10814145407136,
+      "tasks": 20313007362,
+      "projected_seconds_min": 86476.97717966342,
+      "projected_seconds_max": 105943.67898747588
+    },
+    {
+      "domain": "sixfactor",
+      "moduli": 1877025741,
+      "roots": 13963757639,
+      "candidates": 14326815337614,
+      "tasks": 19703118519,
+      "projected_seconds_min": 114566.58259750702,
+      "projected_seconds_max": 140356.4930835348
+    },
+    {
+      "domain": "prime100k-lowfactor",
+      "moduli": 20470401,
+      "roots": 45763775,
+      "candidates": 46953633150,
+      "tasks": 184233609,
+      "projected_seconds_min": 375.4719498903233,
+      "projected_seconds_max": 459.99387380687426
+    },
+    {
+      "domain": "prime1m-lowfactor",
+      "moduli": 1371334635,
+      "roots": 3084658523,
+      "candidates": 3164859644598,
+      "tasks": 12342011715,
+      "projected_seconds_min": 25308.28696663714,
+      "projected_seconds_max": 31005.397246318975
+    },
+    {
+      "domain": "k512-shell",
+      "moduli": 7185542217,
+      "roots": 41932409896,
+      "candidates": 42938787733504,
+      "tasks": 63186873600,
+      "projected_seconds_min": 343366.62095391954,
+      "projected_seconds_max": 420661.36273217446
+    }
+  ]
+}

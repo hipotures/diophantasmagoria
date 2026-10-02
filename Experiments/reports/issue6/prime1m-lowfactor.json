@@ -1,0 +1,17 @@
+{
+  "backend": "symmetric-cubic",
+  "polynomial": "symmetric",
+  "prime_limit": "1000000",
+  "factor_counts": [
+    1,
+    2
+  ],
+  "m_min": "2",
+  "m_max": "10000000000000",
+  "k_ranges": [
+    [
+      -256,
+      256
+    ]
+  ]
+}

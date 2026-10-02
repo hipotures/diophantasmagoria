@@ -1,0 +1,15 @@
+Test project /home/user/DEV/diophantasmagoria-symmetric/build
+    Start 1: unit
+1/5 Test #1: unit .............................   Passed    0.13 sec
+    Start 2: integration
+2/5 Test #2: integration ......................   Passed   12.41 sec
+    Start 3: epochs
+3/5 Test #3: epochs ...........................   Passed    2.00 sec
+    Start 4: symmetric_math
+4/5 Test #4: symmetric_math ...................   Passed    0.10 sec
+    Start 5: symmetric_backend
+5/5 Test #5: symmetric_backend ................   Passed    1.31 sec
+
+100% tests passed, 0 tests failed out of 5
+
+Total Test time (real) =  15.95 sec

@@ -19,6 +19,12 @@ bool excludes_even_square_free(const Poly &a);
 Big eval(const Poly &a, const Big &x);
 std::vector<uint32_t> primes(uint32_t limit);
 std::vector<U> roots(const Poly &a, U p);
+U prime_power(U p, U exponent);
+// Complete one-digit Hensel steps, including every singular branch. A resource
+// limit raises an error; it never returns an incomplete set of roots.
+std::vector<U> hensel_roots(const Poly &a, U p, U exponent,
+                           const std::vector<U> &prime_roots);
+U inverse_mod(U a, U modulus);
 std::vector<U> crt(const std::vector<U> &ps, const std::vector<std::vector<U>> &rs);
 Big arithmetic_bound(const Poly &a, U m, int64_t lo, int64_t hi);
 bool native_safe(const Poly &a, U m, int64_t lo, int64_t hi);

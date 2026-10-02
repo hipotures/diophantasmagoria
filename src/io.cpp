@@ -35,7 +35,9 @@ std::string quote(const std::string &text) {
 void encode(std::ostream &out, const Json &node, const std::string &key, bool top = false) {
     static const std::set<std::string> arrays = {"coefficients", "roots",    "factor_counts",
                                                  "moduli",       "k_ranges", "chosen",
-                                                 "next_index",   "active",   "factors"};
+                                                 "next_index",   "active",   "factors",
+                                                 "prime_exponents", "power_factor_counts",
+                                                 "prime_power_moduli", "factor_exponents", "strata"};
     bool is_array = (arrays.contains(key) && node.data().empty()) ||
                     (!node.empty() && node.front().first.empty());
     if (node.empty() && !is_array && !top) {

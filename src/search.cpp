@@ -18,6 +18,7 @@ namespace dio {
 namespace {
 using Clock = std::chrono::steady_clock;
 constexpr auto generator_version = "lexicographic-prefix2-v2";
+constexpr auto power_generator_version = "prime-power-prefix2-v1";
 constexpr auto filter_version = "even-square-free-g1-g2-v1";
 void bell() {
     for (int i = 0; i < 3; ++i) {
@@ -51,7 +52,7 @@ U product(const std::vector<U> &factors) {
     return m;
 }
 } // namespace
-Domain domain(const Json &config, const Database &db) {
+Domain domain(const Json &config, const Database &db, bool planning) {
     Domain d;
     d.a = get_poly(config);
     const std::string backend = config.get<std::string>("backend", "yz-sum");
@@ -67,8 +68,64 @@ Domain domain(const Json &config, const Database &db) {
     d.m_max = bounded(config, "m_max", 1000);
     if (d.m_min < 2 || d.m_min > d.m_max)
         throw std::runtime_error("Require 2 <= m_min <= m_max <= 2^63-1");
-    if (auto ms = config.get_child_optional("moduli")) {
-        for (const auto &v : *ms) {
+    auto sorted_unique = [](const Json &j, U low, U high, const char *name) {
+        auto values = numbers(j);
+        std::sort(values.begin(), values.end());
+        if (values.empty() || values.front() < low || values.back() > high ||
+            std::adjacent_find(values.begin(), values.end()) != values.end())
+            throw std::runtime_error(std::string("Invalid ") + name);
+        return values;
+    };
+    if (auto exponents = config.get_child_optional("prime_exponents"))
+        d.prime_exponents = sorted_unique(*exponents, 1, 62, "prime_exponents (1..62)");
+    d.prime_powers = d.prime_exponents != std::vector<U>{1} ||
+                     bool(config.get_child_optional("prime_power_moduli"));
+    if (d.prime_powers && !d.symmetric)
+        throw std::runtime_error("Prime powers currently require symmetric-cubic");
+    if (auto counts = config.get_child_optional("power_factor_counts")) {
+        d.power_factor_counts = sorted_unique(*counts, 0, 5, "power_factor_counts (0..5)");
+        if (!d.prime_powers && d.power_factor_counts != std::vector<U>{0})
+            throw std::runtime_error("Powered factors require prime_exponents above 1");
+    } else if (d.prime_powers) {
+        d.power_factor_counts = {0,1,2,3,4,5};
+    }
+    if (auto ms = config.get_child_optional("prime_power_moduli")) {
+        if (config.get_child_optional("moduli") || config.get_child_optional("prime_exponents") ||
+            config.get_child_optional("power_factor_counts"))
+            throw std::runtime_error("Explicit prime_power_moduli cannot mix with other factor definitions");
+        for (const auto &row : *ms) {
+            std::vector<std::pair<U,U>> factors;
+            for (const auto &item : row.second) {
+                U p = bounded(item.second, "prime", 0), e = bounded(item.second, "exponent", 0);
+                if (!db.data.contains(p))
+                    throw std::runtime_error("Explicit prime missing from root database");
+                factors.emplace_back(p,e);
+            }
+            if (factors.empty() || factors.size() > 5)
+                throw std::runtime_error("Explicit moduli need 1 to 5 distinct primes");
+            std::sort(factors.begin(), factors.end());
+            std::vector<U> qs;
+            U previous = 0;
+            for (auto [p,e] : factors) {
+                if (p == previous) throw std::runtime_error("Duplicate prime in prime-power modulus");
+                previous = p;
+                U q = prime_power(p,e);
+                d.power_bases[q] = {p,e};
+                qs.push_back(q);
+            }
+            U m = product(qs);
+            if (m < d.m_min || m > d.m_max)
+                throw std::runtime_error("Explicit modulus outside m bounds");
+            d.moduli.push_back(qs);
+        }
+        if (d.moduli.empty()) throw std::runtime_error("Explicit modulus list is empty");
+        std::sort(d.moduli.begin(), d.moduli.end());
+        if (std::adjacent_find(d.moduli.begin(), d.moduli.end()) != d.moduli.end())
+            throw std::runtime_error("Duplicate explicit modulus");
+    } else if (auto squarefree_moduli = config.get_child_optional("moduli")) {
+        if (d.prime_powers)
+            throw std::runtime_error("Use prime_power_moduli for explicit prime powers");
+        for (const auto &v : *squarefree_moduli) {
             auto ps = numbers(v.second);
             if (ps.empty() || ps.size() > 5)
                 throw std::runtime_error("Explicit moduli need 1 to 5 factors");
@@ -101,8 +158,8 @@ Domain domain(const Json &config, const Database &db) {
                 d.factor_counts.end())
             throw std::runtime_error("Empty or duplicate factor counts");
         for (U f : d.factor_counts)
-            if (f < 1 || f > 5)
-                throw std::runtime_error("Factor counts must be 1 through 5");
+            if (f < 1 || f > (planning ? 6U : 5U))
+                throw std::runtime_error("Search factor counts must be 1 through 5 (planning also permits 6)");
     }
     if (auto ranges = config.get_child_optional("k_ranges")) {
         for (const auto &r : *ranges) {
@@ -127,7 +184,7 @@ Domain domain(const Json &config, const Database &db) {
             throw std::runtime_error("Inverted or overlapping k ranges");
     auto &c = d.canonical;
     c.put("schema", "dio-domain-v1");
-    c.put("generator", generator_version);
+    c.put("generator", d.prime_powers ? power_generator_version : generator_version);
     Json filter;
     filter.put("version", filter_version);
     filter.put("exclude_even_square_free", d.exclude_even ? "true" : "false");
@@ -143,6 +200,24 @@ Domain domain(const Json &config, const Database &db) {
     for (const auto &ps : d.moduli)
         ms.push_back({"", array(ps)});
     c.add_child("moduli", ms);
+    if (d.prime_powers) {
+        c.add_child("prime_exponents", array(d.prime_exponents));
+        c.add_child("power_factor_counts", array(d.power_factor_counts));
+        c.put("lifting", "complete-hensel-v1");
+        Json explicit_powers;
+        for (const auto &qs : d.moduli) {
+            Json row;
+            for (U q : qs) {
+                auto [p,e] = d.power_bases.at(q);
+                Json item;
+                item.put("prime", p);
+                item.put("exponent", e);
+                row.push_back({"",item});
+            }
+            explicit_powers.push_back({"",row});
+        }
+        c.add_child("prime_power_moduli", explicit_powers);
+    }
     Json ranges;
     for (auto [lo, hi] : d.ranges) {
         Json r, a, b;
@@ -161,6 +236,35 @@ Domain domain(const Json &config, const Database &db) {
     return d;
 }
 Generator::Generator(const Domain &dom, const Database &db, U s, U n) : d(dom), shard(s), count(n) {
+    if (d.prime_powers) {
+        U cached_roots = 0;
+        auto add = [&](U p, U e, U q) {
+            auto rs = hensel_roots(d.a, p, e, db.data.at(p));
+            if (powers.size() >= 1000000 || rs.size() > 1000000 - cached_roots)
+                throw std::runtime_error("Prime-power cache exceeds 1000000 entries/roots; reduce domain");
+            cached_roots += rs.size();
+            powers.emplace(q, PowerFactor{p,e,std::move(rs)});
+        };
+        if (!d.moduli.empty()) {
+            for (auto [q,base] : d.power_bases) add(base.first,base.second,q);
+        } else {
+            for (const auto &[p,rs] : db.data) {
+                if (p > d.prime_limit) break;
+                if (rs.empty()) continue;
+                size_t begin = power_options.size();
+                U q = 1, exponent = 0;
+                for (U e : d.prime_exponents) {
+                    while (exponent < e && q <= d.m_max / p) { q *= p; ++exponent; }
+                    if (exponent != e) break;
+                    add(p,e,q);
+                    if (!powers.at(q).roots.empty()) power_options.push_back(q);
+                }
+                for (size_t j = begin; j < power_options.size(); ++j)
+                    next_distinct.push_back(power_options.size());
+            }
+        }
+        return;
+    }
     for (const auto &[p, rs] : db.data)
         if (p <= d.prime_limit && !rs.empty() && !(d.exclude_even && p == 2))
             eligible.push_back(p);
@@ -189,6 +293,7 @@ bool Generator::next(std::vector<U> &factors) {
         }
         return false;
     }
+    if (d.prime_powers) return next_power(factors);
     while (phase < d.factor_counts.size() && !stopped) {
         if (Clock::now() >= deadline) {
             stopped = 1;
@@ -264,8 +369,57 @@ bool Generator::next(std::vector<U> &factors) {
     }
     return false;
 }
+bool Generator::next_power(std::vector<U> &factors) {
+    const U n = power_options.size();
+    while (phase < d.factor_counts.size() && !stopped) {
+        if (Clock::now() >= deadline) { stopped = true; return false; }
+        if (Clock::now() >= yield_deadline) { yielded = true; return false; }
+        if (next_index.back() >= n) {
+            if (chosen.empty()) { ++phase; next_index = {0}; }
+            else { chosen.pop_back(); next_index.pop_back(); }
+            continue;
+        }
+        U i = next_index.back()++, q = power_options[i];
+        U m = 1, powered = powers.at(q).exponent > 1;
+        for (U c : chosen) {
+            m *= power_options[c];
+            powered += powers.at(power_options[c]).exponent > 1;
+        }
+        if (m > d.m_max / q) { next_index.back() = next_distinct[i]; continue; }
+        m *= q;
+        U f = d.factor_counts[phase], remaining = f - chosen.size() - 1;
+        bool viable = false;
+        for (U allowed : d.power_factor_counts)
+            if (powered <= allowed && allowed <= powered + remaining) viable = true;
+        if (!viable) continue;
+        U low = m, j = next_distinct[i];
+        bool too_large = false;
+        for (U r = 0; r < remaining; ++r) {
+            if (j >= n || low > d.m_max / power_options[j]) { too_large = true; break; }
+            low *= power_options[j];
+            j = next_distinct[j];
+        }
+        if (too_large) { next_index.back() = next_distinct[i]; continue; }
+        chosen.push_back(i);
+        if (chosen.size() == std::min<U>(2,f)) {
+            U rank = f == 1 ? i : static_cast<U>((__uint128_t(chosen[0])*n+i) % count);
+            if (rank % count != shard) { chosen.pop_back(); continue; }
+        }
+        if (chosen.size() == f) {
+            chosen.pop_back();
+            if (m < d.m_min) continue;
+            factors.clear();
+            for (U c : chosen) factors.push_back(power_options[c]);
+            factors.push_back(q);
+            return true;
+        }
+        next_index.push_back(next_distinct[i]);
+    }
+    return false;
+}
 Json Generator::state() const {
     Json j;
+    if (d.prime_powers) j.put("version", power_generator_version);
     j.put("phase", phase);
     j.put("explicit_pos", explicit_pos);
     j.add_child("chosen", array(chosen));
@@ -273,6 +427,8 @@ Json Generator::state() const {
     return j;
 }
 void Generator::restore(const Json &j) {
+    if (d.prime_powers && j.get<std::string>("version", "") != power_generator_version)
+        throw std::runtime_error("Prime-power generator checkpoint version mismatch");
     phase = j.get<U>("phase");
     explicit_pos = j.get<U>("explicit_pos");
     chosen = numbers(j.get_child("chosen"));
@@ -281,7 +437,7 @@ void Generator::restore(const Json &j) {
         next_index.size() != chosen.size() + 1)
         throw std::runtime_error("Invalid generator checkpoint");
     for (U i : chosen)
-        if (i >= eligible.size())
+        if (i >= (d.prime_powers ? power_options.size() : eligible.size()))
             throw std::runtime_error("Invalid checkpoint prime index");
 }
 namespace {
@@ -385,7 +541,7 @@ std::string validate_journal(const fs::path &path, U committed, const std::strin
     return chain;
 }
 struct Task {
-    std::vector<U> factors, rs;
+    std::vector<U> factors, exponents, rs;
     U m;
     int64_t lo, hi;
     bool first_modulus = false, first_roots = false;
@@ -405,8 +561,8 @@ struct Source {
     void compute() {
         m = product(active);
         std::vector<std::vector<U>> lists;
-        for (U p : active)
-            lists.push_back(db.data.at(p));
+        for (U q : active)
+            lists.push_back(d.prime_powers ? gen.powers.at(q).roots : db.data.at(q));
         rs = crt(active, lists);
     }
     bool next(Task &t) {
@@ -427,6 +583,15 @@ struct Source {
             return false;
         }
         t.factors = active;
+        if (d.prime_powers) {
+            t.factors.clear();
+            t.exponents.clear();
+            for (U q : active) {
+                const auto &factor = gen.powers.at(q);
+                t.factors.push_back(factor.prime);
+                t.exponents.push_back(factor.exponent);
+            }
+        }
         t.m = m;
         t.lo = k;
         t.hi = std::min<int64_t>(k + 63, d.ranges[range].second);
@@ -631,6 +796,7 @@ template <class N, bool Symmetric = false> Result run_task(const Domain &d, cons
                 hit.put("d", decimal(big(dd)));
                 hit.put("m", t.m);
                 hit.add_child("factors", array(t.factors));
+                if (d.prime_powers) hit.add_child("factor_exponents", array(t.exponents));
                 hit.put("root", r);
                 hit.put("k", k);
                 hit.put("discriminant", decimal(big(delta)));
@@ -753,7 +919,7 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
     }
     if (continuing) {
         Json p = unwrap(checkpoint);
-        if (p.get<std::string>("generator_version", "") != generator_version ||
+        if (p.get<std::string>("generator_version", "") != d.canonical.get<std::string>("generator") ||
             p.get<std::string>("filter_version", "") != filter_version)
             throw std::runtime_error(
                 "Checkpoint generator/filter version mismatch: pre-filter checkpoints are "
@@ -840,7 +1006,7 @@ int search(const Domain &d, const Database &db, const Options &o, double setup_s
         observe("results_synced", totals.tasks);
         Json p;
         p.put("schema", "dio-checkpoint-v2");
-        p.put("generator_version", generator_version);
+        p.put("generator_version", d.canonical.get<std::string>("generator"));
         p.put("filter_version", filter_version);
         p.put("domain", d.fingerprint);
         p.put("shard", o.shard);
