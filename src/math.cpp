@@ -44,17 +44,26 @@ Big eval(const Poly &a, const Big &x) {
 std::vector<uint32_t> primes(uint32_t limit) {
     if (limit > 100000000)
         throw std::runtime_error("Prime limit exceeds supported bounded sieve limit 100000000");
-    std::vector<bool> composite(static_cast<size_t>(limit) + 1);
     std::vector<uint32_t> out;
-    for (uint32_t p = 2; p <= limit; ++p) {
-        if ((p & 1023U) == 0 && stopped)
+    if (limit < 2)
+        return out;
+    out.push_back(2);
+    if (limit < 3)
+        return out;
+    // Odd-only sieve: index i represents the odd number 2*i+3, halving memory and
+    // marking work by skipping even multiples.
+    size_t size = (static_cast<size_t>(limit) - 1) / 2;
+    std::vector<bool> composite(size, false);
+    for (size_t i = 0; i < size; ++i) {
+        if ((i & 1023U) == 0 && stopped)
             throw std::runtime_error("Prime sieve interrupted");
-        if (composite[p])
+        if (composite[i])
             continue;
+        uint32_t p = static_cast<uint32_t>(2 * i + 3);
         out.push_back(p);
         if (U(p) * p <= limit)
-            for (U j = U(p) * p; j <= limit; j += p)
-                composite[static_cast<size_t>(j)] = true;
+            for (U j = U(p) * p; j <= limit; j += 2 * U(p))
+                composite[(j - 3) / 2] = true;
     }
     return out;
 }
@@ -223,6 +232,7 @@ std::vector<U> crt(const std::vector<U> &ps, const std::vector<std::vector<U>> &
         std::vector<U> next;
         if (rs[i].size() && out.size() > 1000000 / rs[i].size())
             throw std::runtime_error("CRT exceeds 1000000 roots per modulus; reduce factors");
+        next.reserve(out.size() * rs[i].size());
         for (U r : out)
             for (U t : rs[i]) {
                 U c = mul((t + p - r % p) % p, inv, p);
@@ -254,6 +264,6 @@ bool residue_allowed(unsigned modulus, unsigned value) {
                 t[q][s * s % q] = true;
         return t;
     }();
-    return tables.at(modulus).at(value);
+    return tables[modulus][value];
 }
 } // namespace dio
