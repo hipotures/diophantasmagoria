@@ -57,6 +57,14 @@ int main() {
             }
             require(primes(limit) == want, "Prime sieve disagrees with trial division");
         }
+        // sha256_concat must equal hashing the concatenation of the same bytes.
+        for (const auto &ab : {std::pair<std::string, std::string>{"", ""},
+                               {"a", "b"},
+                               {"chain", "record\n"},
+                               {std::string(64, 'x'), "tail"},
+                               {"pre", "\npost"}})
+            require(sha256_concat(ab.first, ab.second) == sha256(ab.first + ab.second),
+                    "sha256_concat must match sha256 of the concatenation");
         std::vector<Poly> polys = {polynomial("g1"),
                                    polynomial("g2"),
                                    polynomial("regression"),

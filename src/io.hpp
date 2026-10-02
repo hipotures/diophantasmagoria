@@ -13,7 +13,7 @@ extern std::atomic<bool> stopped;
 Json parse(const std::string &s);
 std::string json(const Json &j);
 std::string sha256(const std::string &s);
-std::string sha252_concat(std::string_view a, std::string_view b);
+std::string sha256_concat(std::string_view a, std::string_view b);
 std::string file_hash(const fs::path &p);
 std::string read_file(const fs::path &p);
 void atomic_write(const fs::path &p, const std::string &data);

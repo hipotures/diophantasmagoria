@@ -113,7 +113,7 @@ std::string sha256(const std::string &s) {
     h.add(s);
     return h.finish();
 }
-std::string sha252_concat(std::string_view a, std::string_view b) {
+std::string sha256_concat(std::string_view a, std::string_view b) {
     Hash h;
     h.add(a);
     h.add(b);
